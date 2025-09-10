@@ -1,0 +1,2086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dart Games Collection</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Main Selection Screen Styles - Smaller cards for mobile */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(180deg, #1a1a2e, #16213e, #0f3460);
+            color: #fff;
+            font-family: 'Orbitron', 'Segoe UI', Arial, sans-serif;
+        }
+
+        .game-selector {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        .game-selector h1 {
+            font-size: clamp(1.5em, 4vw, 2.5em);
+            margin-bottom: 25px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            padding: 0 10px;
+        }
+
+        .game-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 700px;
+            align-items: center;
+        }
+
+        /* Desktop layout for game options */
+        @media (min-width: 768px) {
+            .game-options {
+                flex-direction: row;
+                gap: 40px;
+                justify-content: center;
+            }
+        }
+
+        .game-option {
+            background: linear-gradient(145deg, #2a4f7a, #1e3a5f);
+            border: 2px solid #4a90e2;
+            border-radius: 12px;
+            padding: 20px 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 240px;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .game-option:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(74, 144, 226, 0.3);
+            border-color: #60a5fa;
+        }
+
+        .game-option h2 {
+            font-size: clamp(1.1em, 3.5vw, 1.5em);
+            margin-bottom: 10px;
+            color: #60a5fa;
+        }
+
+        .game-option p {
+            font-size: clamp(0.8em, 2.5vw, 1em);
+            line-height: 1.5;
+            margin-bottom: 0;
+            opacity: 0.9;
+        }
+
+        /* Back button as static element - scrolls with content */
+        .back-button-container {
+            padding: 15px 20px;
+            text-align: center;
+            background: transparent;
+        }
+
+        .back-button {
+            background: rgba(74, 144, 226, 0.9);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .back-button:hover {
+            background: rgba(96, 165, 250, 0.9);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Game 1 (Classic 01) Styles - Scoped with Game 2's colors and 5 columns */
+        #game1 {
+            display: none;
+        }
+
+html, body { height: 100%; margin: 0; padding: 0; background: linear-gradient(180deg, #1a1a2e, #16213e, #0f3460); color: #fff; }
+body { font-family: 'Segoe UI', Arial, sans-serif; min-height: 100vh; }
+#game1 .container { max-width: 600px; margin: 0 auto; background: rgba(0, 0, 51, 0.8); border-radius: 18px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); padding: 0 0 24px 0; min-height: 100vh; display: flex; flex-direction: column;}
+#game1 .title { font-size: 2rem; text-align: center; font-weight: bold; padding: 20px 16px 8px 16px; color: #0083b0; }
+#game1 .setup { padding: 18px 18px 0 18px; display: flex; flex-direction: column; gap: 14px; }
+#game1 .player-input-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+#game1 .player-input-row select, #game1 .player-input-row input[type="text"] {
+          flex: 1 1 0; min-width: 0; padding: 10px 12px; border-radius: 8px;
+          border: 1.5px solid #ffd700; background: rgba(0, 0, 51, 0.8); color: #fff; font-size: 1rem; outline: none;
+        }
+#game1 .player-input-row select { max-width: 160px; }
+#game1 .player-input-row input[type="text"]:focus, #game1 .player-input-row select:focus { border: 1.5px solid #ff6b6b; }
+#game1 .player-input-row .add-btn { flex: 0 0 auto; padding: 10px 18px; font-size: 1rem; border-radius: 8px; border: none; background: linear-gradient(90deg, #00b894 60%, #00a085 100%); color: #fff; font-weight: bold; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+#game1 .player-input-row .add-btn:active { transform: scale(0.97); }
+        @media (max-width: 600px) {
+#game1 .player-input-row select { max-width: 90px; font-size: 0.95rem; }
+#game1 .player-input-row .add-btn { padding: 10px 10px; font-size: 0.95rem; }
+        }
+#game1 .players-list { display: flex; flex-wrap: wrap; gap: 8px; min-height: 36px; }
+#game1 .player-chip { display: flex; align-items: center; background: linear-gradient(90deg, #ffd700 70%, #ffed4e 100%); color: #23283a; font-weight: bold; border-radius: 18px; padding: 6px 14px; font-size: 1rem; gap: 6px; box-shadow: 0 2px 8px #ffd70033; }
+#game1 .remove-btn { background: none; border: none; color: #c0392b; font-size: 1.1rem; cursor: pointer; margin-left: 2px; }
+#game1 .start-btn { width: 100%; background: linear-gradient(90deg, #00b894 60%, #00a085 100%); color: #fff; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: bold; padding: 14px 0; margin-top: 8px; cursor: pointer; box-shadow: 0 4px 16px #00b89444; transition: background 0.2s, transform 0.1s;}
+#game1 .start-btn:disabled { background: #444; color: #bbb; cursor: not-allowed; box-shadow: none; }
+#game1 .fixed-top { position: sticky; top: 0; z-index: 10; background: rgba(0, 0, 51, 0.8); box-shadow: 0 4px 12px #0006; border-radius: 0 0 18px 18px; }
+#game1 .round-bar { background: linear-gradient(90deg, #ff6b6b 0%, #ffd700 100%); border-radius: 10px; height: 18px; position: relative; overflow: hidden; margin: 0 0 0 0; }
+#game1 .round-bar-inner { background: rgba(0, 0, 51, 0.8); height: 100%; transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); border-radius: 10px 0 0 10px; }
+#game1 .round-label { position: absolute; width: 100%; text-align: center; top: 0; left: 0; font-size: 0.96rem; color: #fff; font-weight: bold; text-shadow: 0 1px 3px #0008; line-height: 18px; pointer-events: none; }
+#game1 .players-scroll { display: flex; overflow-x: auto; gap: 10px; padding: 12px 0 8px 0; margin: 0 0 0 0; scrollbar-width: thin; }
+#game1 .player-card { flex: 0 0 120px; min-width: 120px; background: #2d3446; border-radius: 12px; padding: 8px 7px 7px 7px; display: flex; flex-direction: column; align-items: center; gap: 1px; box-shadow: 0 2px 8px #0002; opacity: 0.7; transition: opacity 0.2s, box-shadow 0.2s; position: relative; }
+#game1 .player-card.active { box-shadow: 0 0 12px #ffd700; opacity: 1; outline: 2.5px solid #ffd700; z-index: 2; }
+#game1 .avatar { width: 32px; height: 32px; border-radius: 50%; font-weight: bold; font-size: 1.1rem; background: linear-gradient(135deg, #ffd700 60%, #ffed4e 100%); color: #23283a; display: flex; align-items: center; justify-content: center; margin-bottom: 2px; box-shadow: 0 2px 6px #ffd70033; position: relative; }
+#game1 .player-name { font-size: 0.98rem; font-weight: bold; margin-bottom: 2px; }
+#game1 .player-score { font-size: 1.2rem; font-weight: bold; color: #ffd700; margin-bottom: 0; }
+#game1 .player-turn-scores { display: flex; gap: 3px; justify-content: center; align-items: center; margin-top: 4px; min-height: 22px; }
+#game1 .turn-score-badge { background: #17a2b8; color: #fff; font-size: 0.9rem; border-radius: 7px; padding: 2px 7px; font-weight: bold; }
+#game1 .turn-score-badge.empty { background: #444; color: #bbb; }
+#game1 .turn-score-badge.invalid { background: #444; color: #fff; font-size: 1.1rem; text-decoration: none; padding: 2px 4px; }
+#game1 .turn-info { padding: 10px 0 10px 0; background: #000066; text-align: center; font-size: 1.08rem; font-weight: bold; border-radius: 8px; margin: 0 0 0 0; }
+#game1 .score-section { flex: 1; overflow-y: auto; padding: 0 10px 0 10px; margin-top: 2px; margin-bottom: 100px; }
+#game1 .score-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; background: rgba(0, 0, 51, 0.8); border-radius: 12px; padding: 12px 4px 10px 4px; box-shadow: 0 2px 8px rgba(0, 0, 102, 0.2); }
+#game1 .score-btn { background: #9999cc; color: #000033; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; padding: 12px 0 7px 0; cursor: pointer; transition: background 0.15s, color 0.15s, transform 0.09s; display: flex; flex-direction: column; align-items: center; gap: 2px; user-select: none; }
+#game1 .score-btn:active { transform: scale(1.07);}
+#game1 .score-btn.single { background: #9999cc; color: #000033;}
+#game1 .score-btn.double { background: #66ccff; color: #000033;}
+#game1 .score-btn.triple { background: #ff66ff; color: #000033;}
+#game1 .score-btn.bull { background: #800080; color: #fff;}
+#game1 .score-btn.bull25 { background: #228b22; color: #fff;}
+#game1 .score-btn.miss { background: #e74c3c; color: #fff;}
+#game1 .score-btn .dots { font-size: 0.85em; font-weight: normal; opacity: 0.7; }
+#game1 .actions { display: flex; gap: 10px; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: calc(100% - 40px); max-width: 600px; background: #23283aee; backdrop-filter: blur(5px); padding: 10px; border-radius: 12px; box-shadow: 0 -4px 20px #00000040; z-index: 100; }
+#game1 .action-btn { flex: 1; padding: 12px 0; border-radius: 10px; border: none; font-size: 1rem; font-weight: bold; background: #00b894; color: #fff; transition: background 0.2s, transform 0.1s; cursor: pointer; box-shadow: 0 2px 12px #00b89433; }
+#game1 .action-btn.undo { background: #ffc107; color: #23283a;}
+#game1 .action-btn.end { background: #e74c3c;}
+#game1 .action-btn:disabled { background: #444; color: #bbb; cursor: not-allowed; box-shadow: none; transform: none; }
+#game1 .winner { display: none; flex-direction: column; align-items: center; gap: 16px; margin-top: 24px; padding: 0 16px; }
+#game1 .winner-banner { font-size: 2rem; font-weight: bold; background: linear-gradient(90deg, #ffd700 60%, #ffed4e 100%); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; text-align: center; margin-bottom: 8px; text-shadow: 0 2px 8px #ffd70055; }
+#game1 .final-scores { width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 10px; }
+#game1 .final-score-row { background: #2d3446; border-radius: 10px; padding: 12px 10px; font-size: 1.05rem; font-weight: bold; display: flex; flex-direction: column; align-items: center; border: 2px solid #ffd70044; }
+#game1 .stat-label { font-size: 0.92rem; color: #ffd700; margin-bottom: 2px; }
+#game1 .stat-value { font-size: 1.2rem; font-weight: bold; color: #fff; }
+#game1 .new-game-btn { background: linear-gradient(90deg, #00b894 60%, #00a085 100%); color: #fff; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: bold; padding: 14px 0; width: 100%; cursor: pointer; box-shadow: 0 4px 16px #00b89444; transition: background 0.2s, transform 0.1s;}
+#game1 .new-game-btn:active { transform: scale(0.97);}
+#game1 .player-stats { font-size: 0.9rem; color: #ffd700; margin-top: 2px; margin-bottom: 2px; text-align: center; min-height: 18px; }
+#game1 .bullseye-anim { animation: bullseyePop 0.5s cubic-bezier(0.5,1.8,0.7,1.2);}
+        @keyframes bullseyePop { 0% { transform: scale(1); box-shadow: 0 0 0 rgba(0, 255, 255, 0.3);} 50% { transform: scale(1.8); box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);} 100% { transform: scale(1); box-shadow: 0 0 0 rgba(0, 255, 255, 0.3);} }
+        @media (max-width: 600px) { .container { padding: 0; border-radius: 0; } .player-card { min-width: 90px; padding: 7px 3px;} .score-grid { grid-template-columns: repeat(5, 1fr);} }
+        @media (max-width: 400px) { .title { font-size: 1.3rem;} .score-btn { font-size: 0.9rem; padding: 8px 0 4px 0;} .player-card { min-width: 70px;} .final-score-row { font-size: 0.95rem;} }
+#game1 .players-scroll::-webkit-scrollbar { height: 8px; }
+#game1 .players-scroll::-webkit-scrollbar-thumb { background: rgba(0, 255, 255, 0.5); border-radius: 4px; }
+#game1 .score-section::-webkit-scrollbar { width: 8px; }
+#game1 .score-section::-webkit-scrollbar-thumb { background: rgba(0, 255, 255, 0.5); border-radius: 4px; }
+        
+        /* NEW ANIMATION: Reliable shake for invalid throws */
+#game1 .shake-animation { animation: shake-horizontal 0.6s cubic-bezier(.455,.03,.515,.955) both; }
+        @keyframes shake-horizontal {
+#game1 0%, #game1 100% { transform: translateX(0); }
+#game1 10%, #game1 30%, #game1 50%, #game1 70% { transform: translateX(-8px); }
+#game1 20%, #game1 40%, #game1 60%, #game1 80% { transform: translateX(8px); }
+        }
+
+        /* Game 2 (Count-Up) Styles - Scoped with 5 columns */
+        #game2 {
+            display: none;
+        }
+
+html, body { height: 100%; margin: 0; padding: 0; background: linear-gradient(180deg, #000033, #000066); color: #e0e0ff; }
+body { font-family: 'Orbitron', sans-serif; min-height: 100vh; }
+#game2 .container { max-width: 600px; margin: 0 auto; background: rgba(0, 0, 51, 0.8); border-radius: 18px; box-shadow: 0 8px 32px rgba(0, 0, 102, 0.4); padding: 0 0 24px 0; min-height: 100vh; display: flex; flex-direction: column;}
+#game2 .title { font-size: 2rem; text-align: center; font-weight: bold; padding: 20px 16px 8px 16px; color: #00ffff; text-shadow: 0 0 10px #00ffff; }
+#game2 .setup { padding: 18px 18px 0 18px; display: flex; flex-direction: column; gap: 14px; }
+#game2 .player-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.player-input-row select,
+#game2 .player-input-row input[type="text"] {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1.5px solid #ff00ff;
+  background: rgba(0, 0, 51, 0.8);
+  color: #e0e0ff;
+  font-size: 1rem;
+  outline: none;
+}
+
+#game2 .player-input-row select {
+  max-width: 160px;
+}
+
+.player-input-row input[type="text"]:focus,
+#game2 .player-input-row select:focus {
+  border: 1.5px solid #00ffff;
+}
+
+#game2 .player-input-row .add-btn {
+  flex: 0 0 auto;
+  padding: 10px 18px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(90deg, #ff00ff 60%, #cc00cc 100%);
+  color: #e0e0ff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+#game2 .player-input-row .add-btn:active {
+  transform: scale(0.97);
+}
+
+@media (max-width: 600px) {
+#game2 .player-input-row select { max-width: 90px; font-size: 0.95rem; }
+#game2 .player-input-row .add-btn { padding: 10px 10px; font-size: 0.95rem; }
+}
+
+#game2 .player-input-row input { flex: 1; padding: 10px 14px; border-radius: 8px; border: 1.5px solid #ff00ff; font-size: 1rem; background: rgba(0, 0, 51, 0.8); color: #e0e0ff; outline: none; }
+#game2 .player-input-row input:focus { border: 1.5px solid #00ffff; }
+#game2 .add-btn { background: linear-gradient(90deg, #ff00ff 60%, #cc00cc 100%); border: none; border-radius: 8px; color: #e0e0ff; font-weight: bold; font-size: 1rem; padding: 10px 18px; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+#game2 .add-btn:active { transform: scale(0.97); }
+#game2 .players-list { display: flex; flex-wrap: wrap; gap: 8px; min-height: 36px; }
+#game2 .player-chip { display: flex; align-items: center; background: linear-gradient(90deg, #00ffff 70%, #00cccc 100%); color: #000033; font-weight: bold; border-radius: 18px; padding: 6px 14px; font-size: 1rem; gap: 6px; box-shadow: 0 2px 8px rgba(0, 255, 255, 0.2); }
+#game2 .remove-btn { background: none; border: none; color: #ff0066; font-size: 1.1rem; cursor: pointer; margin-left: 2px; }
+#game2 .start-btn { width: 100%; background: linear-gradient(90deg, #ff00ff 60%, #cc00cc 100%); color: #e0e0ff; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: bold; padding: 14px 0; margin-top: 8px; cursor: pointer; box-shadow: 0 4px 16px rgba(255, 0, 255, 0.3); transition: background 0.2s, transform 0.1s;}
+#game2 .start-btn:disabled { background: #333366; color: #9999cc; cursor: not-allowed; box-shadow: none; }
+#game2 .fixed-top { position: sticky; top: 0; z-index: 10; background: rgba(0, 0, 51, 0.8); box-shadow: 0 4px 12px rgba(0, 0, 102, 0.4); border-radius: 0 0 18px 18px; }
+#game2 .round-bar { background: linear-gradient(90deg, #00ffcc, #ff33cc); border-radius: 10px; height: 20px; position: relative; overflow: hidden; margin: 8px 0; box-shadow: 0 0 10px rgba(0, 255, 204, 0.7); border: 2px solid #00ffff; }
+#game2 .round-bar-inner { background: rgba(0, 0, 51, 0.9); height: 100%; transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); border-radius: 8px 0 0 8px; }
+#game2 .round-label { position: absolute; width: 100%; text-align: center; top: 0; left: 0; font-size: 1rem; color: #ffffff; font-weight: bold; text-shadow: 0 0 5px #00ffff, 0 0 10px #ff33cc; line-height: 20px; pointer-events: none; }
+#game2 .players-scroll { display: flex; overflow-x: auto; gap: 10px; padding: 12px 0 8px 0; margin: 0 0 0 0; scrollbar-width: thin; }
+#game2 .player-card { flex: 0 0 120px; min-width: 120px; background: rgba(51, 51, 102, 0.8); border-radius: 12px; padding: 8px 7px 7px 7px; display: flex; flex-direction: column; align-items: center; gap: 1px; box-shadow: 0 2px 8px rgba(0, 0, 102, 0.2); opacity: 0.7; transition: opacity 0.2s, box-shadow 0.2s; position: relative; }
+#game2 .player-card.active { box-shadow: 0 0 12px #00ffff; opacity: 1; outline: 2.5px solid #00ffff; z-index: 2; }
+#game2 .avatar { width: 32px; height: 32px; border-radius: 50%; font-weight: bold; font-size: 1.1rem; background: linear-gradient(135deg, #00ffff 60%, #00cccc 100%); color: #000033; display: flex; align-items: center; justify-content: center; margin-bottom: 2px; box-shadow: 0 2px 6px rgba(0, 255, 255, 0.2); }
+#game2 .player-name { font-size: 0.98rem; font-weight: bold; margin-bottom: 2px; }
+#game2 .player-score { font-size: 1.2rem; font-weight: bold; color: #ffffff; margin-bottom: 0; }
+#game2 .player-turn-scores { display: flex; gap: 3px; justify-content: center; margin-top: 4px; }
+#game2 .turn-score-badge { background: #9932cc; color: #e0e0ff; font-size: 0.9rem; border-radius: 7px; padding: 2px 7px; font-weight: bold; }
+#game2 .turn-score-badge.empty { background: #333366; color: #9999cc; }
+#game2 .turn-info { padding: 10px 0 10px 0; background: #000066; text-align: center; font-size: 1.08rem; font-weight: bold; border-radius: 8px; margin: 0 0 0 0; }
+#game2 .score-section { flex: 1; overflow-y: auto; padding: 0 10px 0 10px; margin-top: 2px; margin-bottom: 100px; }
+#game2 .score-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; background: rgba(0, 0, 51, 0.8); border-radius: 12px; padding: 12px 4px 10px 4px; box-shadow: 0 2px 8px rgba(0, 0, 102, 0.2); }
+#game2 .score-btn { background: #9999cc; color: #000033; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; padding: 12px 0 7px 0; cursor: pointer; transition: background 0.15s, color 0.15s, transform 0.09s; display: flex; flex-direction: column; align-items: center; gap: 2px; user-select: none; }
+#game2 .score-btn:active { transform: scale(1.07);}
+#game2 .score-btn.single { background: #9999cc; color: #000033;}
+#game2 .score-btn.double { background: #66ccff; color: #000033;}
+#game2 .score-btn.triple { background: #ff66ff; color: #000033;}
+#game2 .score-btn.bull { background: #330066; color: #e0e0ff;}
+#game2 .score-btn.bull25 { background: #006666; color: #e0e0ff;}
+#game2 .score-btn.miss { background: #ff0066; color: #e0e0ff;}
+#game2 .score-btn .dots { font-size: 0.85em; font-weight: normal; opacity: 0.7; }
+#game2 .actions { display: flex; gap: 10px; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: calc(100% - 40px); max-width: 600px; background: rgba(0, 0, 51, 0.9); backdrop-filter: blur(5px); padding: 10px; border-radius: 12px; box-shadow: 0 -4px 20px rgba(0, 0, 102, 0.4); z-index: 100; }
+#game2 .action-btn { flex: 1; padding: 12px 0; border-radius: 10px; border: none; font-size: 1rem; font-weight: bold; background: #ff00ff; color: #e0e0ff; transition: background 0.2s, transform 0.1s; cursor: pointer; box-shadow: 0 2px 12px rgba(255, 0, 255, 0.2); }
+#game2 .action-btn.undo { background: #00ffff; color: #000033;}
+#game2 .action-btn.end { background: #ff0066;}
+#game2 .action-btn:disabled { background: #333366; color: #9999cc; cursor: not-allowed; box-shadow: none; transform: none; }
+#game2 .winner { display: none; flex-direction: column; align-items: center; gap: 16px; margin-top: 24px; }
+#game2 .winner-banner { font-size: 2rem; font-weight: bold; background: linear-gradient(90deg, #00ffff 60%, #00cccc 100%); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; text-align: center; margin-bottom: 8px; text-shadow: 0 2px 8px rgba(0, 255, 255, 0.3); }
+#game2 .final-scores { width: 100%; background: rgba(0, 0, 51, 0.8); border-radius: 12px; padding: 14px 0; box-shadow: 0 2px 8px rgba(0, 0, 102, 0.2); margin-bottom: 10px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+#game2 .final-score-row { background: rgba(51, 51, 102, 0.8); border-radius: 10px; padding: 12px 10px; margin: 4px; font-size: 1.05rem; font-weight: bold; display: flex; flex-direction: column; align-items: center; border: 2px solid rgba(0, 255, 255, 0.3); }
+#game2 .stat-label { font-size: 0.92rem; color: #ff00ff; margin-bottom: 2px; }
+#game2 .stat-value { font-size: 1.2rem; font-weight: bold; color: #e0e0ff; }
+#game2 .new-game-btn { background: linear-gradient(90deg, #ff00ff 60%, #cc00cc 100%); color: #e0e0ff; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: bold; padding: 14px 0; width: 100%; cursor: pointer; box-shadow: 0 4px 16px rgba(255, 0, 255, 0.3); transition: background 0.2s, transform 0.1s;}
+#game2 .new-game-btn:active { transform: scale(0.97);}
+#game2 .player-stats { font-size: 0.9rem; color: #ffd700; margin-top: 2px; margin-bottom: 2px; text-align: center; min-height: 18px; }
+#game2 .bullseye-anim { animation: bullseyePop 0.5s cubic-bezier(0.5,1.8,0.7,1.2);}
+        @keyframes bullseyePop { 0% { transform: scale(1); box-shadow: 0 0 0 rgba(0, 255, 255, 0.3);} 50% { transform: scale(1.8); box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);} 100% { transform: scale(1); box-shadow: 0 0 0 rgba(0, 255, 255, 0.3);} }
+        @media (max-width: 600px) { .container { padding: 0; } .player-card { min-width: 90px; padding: 7px 3px;} .score-grid { grid-template-columns: repeat(5, 1fr);} }
+        @media (max-width: 400px) { .title { font-size: 1.3rem;} .score-btn { font-size: 0.9rem; padding: 8px 0 4px 0;} .player-card { min-width: 70px;} .final-score-row { font-size: 0.95rem;} }
+#game2 .players-scroll::-webkit-scrollbar { height: 8px; }
+#game2 .players-scroll::-webkit-scrollbar-thumb { background: rgba(0, 255, 255, 0.5); border-radius: 4px; }
+#game2 .score-section::-webkit-scrollbar { width: 8px; }
+#game2 .score-section::-webkit-scrollbar-thumb { background: rgba(0, 255, 255, 0.5); border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <!-- Game Selection Screen -->
+    <div id="gameSelector" class="game-selector">
+        <h1>🎯 Dart Games Collection</h1>
+        <div class="game-options">
+            <div class="game-option" onclick="selectGame('game1')">
+                <h2>🎯 Classic 01</h2>
+                <p>Start with target score (301, 501, etc.) and work down to exactly zero. Competitive play!</p>
+            </div>
+            <div class="game-option" onclick="selectGame('game2')">
+                <h2>🎯 Count-Up</h2>
+                <p>Accumulate points as you play! See who can reach the highest score. Practice mode!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game 1: Classic 01 Dart Game -->
+    <div id="game1" class="hidden">
+        <div class="back-button-container">
+            <button class="back-button" onclick="showGameSelector()">← Back to Games</button>
+        </div>
+<div class="container">
+    <div class="title">🎯 Classic 01 Dart Game</div>
+    <div class="setup" id="setup">
+        <div class="player-input-row">
+            <label for="gameType" style="min-width:90px;">Game:</label>
+            <select id="gameType">
+                <option value="301">301</option>
+                <option value="501" selected>501</option>
+                <option value="701">701</option>
+            </select>
+        </div>
+        <div class="player-input-row">
+            <label for="inType" style="min-width:90px;">In:</label>
+            <select id="inType">
+                <option value="straight">Straight In</option>
+                <option value="double">Double In</option>
+                <option value="triple">Triple In</option>
+                <option value="master">Master In</option>
+            </select>
+        </div>
+        <div class="player-input-row">
+            <label for="outType" style="min-width:90px;">Out:</label>
+            <select id="outType">
+                <option value="straight">Straight Out</option>
+                <option value="double" selected>Double Out</option>
+                <option value="triple">Triple Out</option>
+                <option value="master">Master Out</option>
+            </select>
+        </div>
+        <div class="player-input-row">
+            <select id="predefinedPlayerSelect">
+                <option value="">Select player...</option>
+                <option value="Amit">Amit</option>
+		<option value="Anjali">Anjali</option>
+		<option value="Ankit">Ankit</option>
+		<option value="D">D</option>
+		<option value="DSP">DSP</option>
+		<option value="Gayathri">Gayathri</option>
+        	<option value="Hemanth">Hemanth</option>
+		<option value="Ion">Ion</option>
+		<option value="Kalees">Kalees</option>
+		<option value="Kasi">Kasi</option>
+        	<option value="Loki">Loki</option>
+		<option value="Simeon">Simeon</option>
+        	<option value="Sreejith">Sreejith</option>
+        	<option value="Sumit">Sumit</option>
+		<option value="Yashasvi">Yashasvi</option>
+            </select>
+            <input type="text" id="playerName" placeholder="Enter player name" maxlength="18" />
+            <button class="add-btn" id="addPlayerBtn">Add</button>
+        </div>
+        <div class="players-list" id="playersList"></div>
+        <button class="start-btn" id="startBtn" disabled>Start Game</button>
+    </div>
+    <div id="game" style="display:none; flex-direction:column; height:100%;">
+        <div class="fixed-top">
+            <div style="padding: 0 18px;">
+                <div class="round-bar">
+                    <div class="round-bar-inner" id="roundBarInner"></div>
+                    <div class="round-label" id="roundLabel"></div>
+                </div>
+            </div>
+            <div class="players-scroll" id="playersScroll"></div>
+            <div class="turn-info" id="turnInfo"></div>
+        </div>
+        <div class="score-section" id="scoreSection">
+            <div id="scoreGrid" class="score-grid"></div>
+        </div>
+        <div class="actions">
+            <button class="action-btn undo" id="undoBtn" disabled>Undo</button>
+            <button class="action-btn" id="nextBtn" disabled>Next Player</button>
+            <button class="action-btn end" id="endBtn">End Game</button>
+        </div>
+    </div>
+    <div class="winner" id="winner">
+        <div class="winner-banner" id="winnerBanner"></div>
+        <div class="final-scores" id="finalScores"></div>
+        <button class="new-game-btn" id="newGameBtn">New Game</button>
+    </div>
+</div>
+<script>
+// --- UTILITIES ---
+function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
+
+// --- STATE MANAGEMENT ---
+let players = [], scores = {}, currentPlayerIdx = 0, throws = [];
+let roundScores = {}, dartsThrown = {}, undoStack = [];
+let startingScore = 501, inRule = 'straight', outRule = 'double';
+let playerHasOpened = {}, winnerFound = false, currentTurnStartScore = 0;
+const throwsPerTurn = 3;
+
+// --- DOM ELEMENTS ---
+const setupDiv = document.getElementById('setup');
+const playerNameInput = document.getElementById('playerName');
+const addPlayerBtn = document.getElementById('addPlayerBtn');
+const playersListDiv = document.getElementById('playersList');
+const startBtn = document.getElementById('startBtn');
+const predefinedPlayerSelect = document.getElementById('predefinedPlayerSelect');
+const gameDiv = document.getElementById('game');
+const roundBarInner = document.getElementById('roundBarInner');
+const roundLabel = document.getElementById('roundLabel');
+const playersScroll = document.getElementById('playersScroll');
+const turnInfo = document.getElementById('turnInfo');
+const scoreGridDiv = document.getElementById('scoreGrid');
+const undoBtn = document.getElementById('undoBtn');
+const nextBtn = document.getElementById('nextBtn');
+const endBtn = document.getElementById('endBtn');
+const winnerDiv = document.getElementById('winner');
+const winnerBanner = document.getElementById('winnerBanner');
+const finalScoresDiv = document.getElementById('finalScores');
+const newGameBtn = document.getElementById('newGameBtn');
+const gameType = document.getElementById('gameType');
+const inType = document.getElementById('inType');
+const outType = document.getElementById('outType');
+
+// --- SETUP PHASE ---
+predefinedPlayerSelect.onchange = function() {
+    if (this.value) {
+        playerNameInput.value = this.value;
+        addPlayerBtn.click();
+        this.value = ''; // Reset dropdown after adding
+    }
+};
+
+addPlayerBtn.onclick = () => {
+    const name = playerNameInput.value.trim();
+    if (!name || players.includes(name)) {
+        playerNameInput.value = '';
+        return;
+    }
+    players.push(name);
+    playerNameInput.value = '';
+    updatePlayersList();
+    startBtn.disabled = players.length < 1;
+};
+playerNameInput.addEventListener('keypress', e => { if (e.key === 'Enter') addPlayerBtn.click(); });
+
+function updatePlayersList() {
+    playersListDiv.innerHTML = '';
+    players.forEach(name => {
+        const chip = document.createElement('span');
+        chip.className = 'player-chip';
+        chip.innerHTML = `🎯 ${name} <button class="remove-btn" title="Remove" onclick="removePlayer('${name}')">×</button>`;
+        playersListDiv.appendChild(chip);
+    });
+}
+window.removePlayer = (name) => {
+    players = players.filter(p => p !== name);
+    updatePlayersList();
+    startBtn.disabled = players.length < 1;
+};
+
+// --- GAME LIFECYCLE ---
+startBtn.onclick = () => {
+    if (players.length === 0) return;
+    // 1. Initialize game state from selections
+    startingScore = parseInt(gameType.value, 10);
+    inRule = inType.value;
+    outRule = outType.value;
+    currentPlayerIdx = 0;
+    throws = [];
+    winnerFound = false;
+    undoStack = [];
+    playerHasOpened = {};
+    roundScores = {};
+    dartsThrown = {};
+
+    // 2. Set up each player
+    players.forEach(p => {
+        scores[p] = startingScore;
+        roundScores[p] = [];
+        dartsThrown[p] = 0;
+        playerHasOpened[p] = (inRule === 'straight');
+    });
+
+    // 3. Transition UI and start the first turn
+    setupDiv.style.display = 'none';
+    winnerDiv.style.display = 'none';
+    gameDiv.style.display = 'flex';
+    startTurn();
+};
+
+function startTurn() {
+    const name = players[currentPlayerIdx];
+    currentTurnStartScore = scores[name]; // Store score for bust logic
+    throws = [];
+    updateGameUI();
+}
+
+function nextPlayer() {
+    if (winnerFound) return;
+    const name = players[currentPlayerIdx];
+    if (!roundScores[name]) roundScores[name] = [];
+    roundScores[name].push(deepClone(throws)); // Log the completed turn
+    
+    currentPlayerIdx = (currentPlayerIdx + 1) % players.length;
+    startTurn();
+}
+
+endBtn.onclick = () => {
+    if (confirm("Are you sure you want to end the game? This action cannot be undone.")) {
+        winnerFound = true;
+        showWinner();
+    }
+};
+
+newGameBtn.onclick = () => {
+    setupDiv.style.display = 'flex';
+    gameDiv.style.display = 'none';
+    winnerDiv.style.display = 'none';
+    players = [];
+    updatePlayersList();
+    startBtn.disabled = true;
+    playerNameInput.value = '';
+};
+
+// --- CORE GAME LOGIC ---
+function addThrow(score, type) {
+    if (throws.length >= throwsPerTurn || winnerFound) return;
+
+    pushUndoState(); 
+
+    const name = players[currentPlayerIdx];
+    const isCurrentlyOpen = playerHasOpened[name];
+    let isScoringThrow = isCurrentlyOpen;
+    
+    dartsThrown[name]++;
+    const thisThrow = { score, type, valid: false };
+    throws.push(thisThrow);
+
+    // 1. "IN" RULE LOGIC
+    if (!isCurrentlyOpen) {
+        const meetsInRule = (inRule === 'double' && type === 'double') ||
+                            (inRule === 'triple' && type === 'triple') ||
+                            (inRule === 'master' && (type === 'double' || type === 'triple'));
+        if (meetsInRule) {
+            playerHasOpened[name] = true;
+            isScoringThrow = true;
+        }
+    }
+
+    // 2. SCORING AND "OUT" / BUST LOGIC
+    if (isScoringThrow) {
+        const newScore = scores[name] - score;
+        let isBust = false;
+
+        if (newScore === 0) { // Potential WIN, but requires validation
+            const meetsOutRule = (outRule === 'straight') ||
+                                 (outRule === 'double' && type === 'double') ||
+                                 (outRule === 'triple' && type === 'triple') ||
+                                 (outRule === 'master' && (type === 'double' || type === 'triple'));
+            if (!meetsOutRule) {
+                isBust = true;
+            } else {
+                // Valid win, ask for confirmation
+                scores[name] = newScore;
+                updateGameUI(); // Update UI to show 0 before confirming
+                setTimeout(() => { // Timeout to allow UI to update
+                    if (confirm(`🏆 ${name} has won! End the game?`)) {
+                        winnerFound = true;
+                        showWinner();
+                    } else {
+                        // User cancelled, so undo the last (winning) throw
+                        undoBtn.click(); 
+                    }
+                }, 100);
+                return; // Stop further processing for this throw
+            }
+        } else if (newScore < 0 || (newScore === 1 && outRule !== 'straight')) {
+            isBust = true;
+        }
+
+        if (isBust) {
+            scores[name] = currentTurnStartScore;
+            showInvalidThrowAnimation(name);
+            while (throws.length < throwsPerTurn) throws.push({ score: 'B', type: 'bust', valid: false });
+        } else {
+            thisThrow.valid = true;
+            scores[name] = newScore;
+        }
+    } else {
+        // FAILED "IN" RULE
+        showInvalidThrowAnimation(name);
+    }
+    
+    updateGameUI();
+}
+
+
+// --- UNDO LOGIC ---
+function pushUndoState() {
+    undoStack.push({
+        scores: deepClone(scores),
+        currentPlayerIdx,
+        throws: deepClone(throws),
+        roundScores: deepClone(roundScores),
+        dartsThrown: deepClone(dartsThrown),
+        playerHasOpened: deepClone(playerHasOpened),
+        winnerFound,
+        currentTurnStartScore
+    });
+    if (undoStack.length > 50) undoStack.shift();
+}
+
+undoBtn.onclick = () => {
+    if (undoStack.length === 0) return;
+    const prevState = undoStack.pop();
+    scores = prevState.scores;
+    currentPlayerIdx = prevState.currentPlayerIdx;
+    throws = prevState.throws;
+    roundScores = prevState.roundScores;
+    dartsThrown = prevState.dartsThrown;
+    playerHasOpened = prevState.playerHasOpened;
+    winnerFound = prevState.winnerFound;
+    currentTurnStartScore = prevState.currentTurnStartScore;
+    updateGameUI();
+};
+
+// --- UI AND ANIMATIONS ---
+function showInvalidThrowAnimation(playerName) {
+    const card = Array.from(document.querySelectorAll('.player-card')).find(c => c.querySelector('.player-name').textContent === playerName);
+    if (card) {
+        card.classList.add('shake-animation');
+        setTimeout(() => card.classList.remove('shake-animation'), 600);
+    }
+}
+
+function updateGameUI() {
+    const name = players[currentPlayerIdx];
+    
+    const progress = Math.max(0, (startingScore - (scores[name] || startingScore)) / startingScore * 100);
+    roundBarInner.style.width = `${progress}%`;
+    roundLabel.textContent = `Target: ${startingScore}`;
+
+    playersScroll.innerHTML = '';
+    const minScore = Math.min(...players.map(p => scores[p] > 0 ? scores[p] : Infinity));
+    players.forEach((pName, idx) => {
+        const card = document.createElement('div');
+        card.className = 'player-card' + (idx === currentPlayerIdx ? ' active' : '');
+        const darts = dartsThrown[pName] || 0;
+        const ppd = darts ? ((startingScore - scores[pName]) / darts).toFixed(2) : '0.00';
+        
+        let statText = 'Winner!';
+        if (scores[pName] > 0) {
+            if (!playerHasOpened[pName]) {
+                statText = 'Waiting to Open';
+            } else if (scores[pName] === minScore) {
+                statText = 'Leader';
+            } else {
+                statText = `+${scores[pName] - minScore}`;
+            }
+        }
+        
+        card.innerHTML = `
+          <div class="avatar">${pName[0].toUpperCase()}</div>
+          <div class="player-name">${pName}</div>
+          <div class="player-score">${scores[pName]}</div>
+          <div class="player-stats">${statText} | PPD: ${ppd}</div>
+          <div class="player-turn-scores"></div>
+        `;
+        playersScroll.appendChild(card);
+        
+        const tsDiv = card.querySelector('.player-turn-scores');
+        const turnDisplay = (idx === currentPlayerIdx) ? throws : (roundScores[pName]?.slice(-1)[0] || []);
+        for (let i = 0; i < throwsPerTurn; i++) {
+            const badge = document.createElement('span');
+            badge.className = 'turn-score-badge empty';
+            badge.innerHTML = '&ndash;';
+            if (turnDisplay[i]) {
+                if (turnDisplay[i].valid) {
+                    badge.className = 'turn-score-badge';
+                    badge.textContent = turnDisplay[i].score;
+                } else {
+                    badge.className = 'turn-score-badge invalid';
+                    badge.textContent = '🥚'; // Display egg for invalid throws
+                }
+            }
+            tsDiv.appendChild(badge);
+        }
+    });
+
+    const activeCard = playersScroll.querySelector('.player-card.active');
+    if (activeCard) activeCard.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+
+    const turnTotal = throws.filter(t => t.valid).reduce((sum, t) => sum + t.score, 0);
+    turnInfo.textContent = `${name}'s Turn — Threw: ${turnTotal} | Remaining: ${scores[name]}`;
+
+    const turnOver = throws.length >= throwsPerTurn;
+    undoBtn.disabled = undoStack.length === 0;
+    nextBtn.disabled = !turnOver || winnerFound;
+    
+    scoreGridDiv.style.display = turnOver || winnerFound ? 'none' : 'grid';
+}
+
+function buildScoreGrid() {
+    scoreGridDiv.innerHTML = '';
+    const addBtn = (label, val, css, type, dots) => {
+        const btn = document.createElement('button');
+        btn.className = `score-btn ${css}`;
+        btn.innerHTML = `<span>${label}</span>${dots ? `<span class="dots">${dots}</span>` : ''}`;
+        btn.onclick = () => addThrow(val, type);
+        scoreGridDiv.appendChild(btn);
+    };
+    addBtn('MISS', 0, 'miss', 'single');
+    addBtn('Bull', 25, 'bull25', 'single', '25');
+    addBtn('Bull', 50, 'bull', 'double', 'D•50');
+    for (let i = 1; i <= 20; i++) addBtn(i, i, 'single', 'single', 'S');
+    for (let i = 1; i <= 20; i++) addBtn(i, i * 2, 'double', 'double', 'D');
+    for (let i = 1; i <= 20; i++) addBtn(i, i * 3, 'triple', 'triple', 'T');
+}
+
+function showWinner() {
+    gameDiv.style.display = 'none';
+    winnerDiv.style.display = 'flex';
+    
+    const winners = players.filter(p => scores[p] === 0);
+    winnerBanner.textContent = winners.length > 0 ? `🏆 Winner: ${winners.join(' & ')} 🏆` : "Game Over";
+    
+    confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+    
+    finalScoresDiv.innerHTML = '';
+    const sortedPlayers = players.slice().sort((a, b) => scores[a] - scores[b]);
+    sortedPlayers.forEach((pName, idx) => {
+        const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '';
+        const darts = dartsThrown[pName] || 0;
+        const ppd = darts ? ((startingScore - scores[pName]) / darts).toFixed(2) : '0.00';
+        
+        const row = document.createElement('div');
+        row.className = 'final-score-row';
+        row.innerHTML = `
+            <div>${medal} ${pName}</div>
+            <div class="stat-label">Final Score</div>
+            <div class="stat-value">${scores[pName]}</div>
+            <div class="stat-label">PPD / Darts</div>
+            <div class="stat-value">${ppd} / ${darts}</div>
+        `;
+        finalScoresDiv.appendChild(row);
+    });
+}
+
+// --- INITIALIZATION ---
+nextBtn.onclick = nextPlayer;
+buildScoreGrid();
+updatePlayersList();
+startBtn.disabled = true;
+</script>
+    </div>
+
+    <!-- Game 2: Dart Count-Up Game -->
+    <div id="game2" class="hidden">
+        <div class="back-button-container">
+            <button class="back-button" onclick="showGameSelector()">← Back to Games</button>
+        </div>
+<div class="container">
+    <div class="title">🎯 Dart Count-Up</div>
+    <div class="setup" id="setup">
+        <div class="player-input-row">
+  <select id="predefinedPlayerSelect">
+        <option value="">Select player...</option>
+        	<option value="Amit">Amit</option>
+		<option value="Anjali">Anjali</option>
+		<option value="Ankit">Ankit</option>
+		<option value="D">D</option>
+		<option value="DSP">DSP</option>
+		<option value="Gayathri">Gayathri</option>
+        	<option value="Hemanth">Hemanth</option>
+		<option value="Ion">Ion</option>
+		<option value="Kalees">Kalees</option>
+		<option value="Kasi">Kasi</option>
+        	<option value="Loki">Loki</option>
+		<option value="Simeon">Simeon</option>
+        	<option value="Sreejith">Sreejith</option>
+        	<option value="Sumit">Sumit</option>
+		<option value="Yashasvi">Yashasvi</option>
+        <!-- Add more regulars here if you want -->
+    </select>
+  <input type="text" id="playerName" placeholder="Enter player name" maxlength="18" />
+  <button class="add-btn" id="addPlayerBtn">Add</button>
+</div>
+
+        <div class="players-list" id="playersList"></div>
+        <button class="start-btn" id="startBtn" disabled>Start Game</button>
+    </div>
+    <div id="game" style="display:none; flex-direction:column; height:100%;">
+        <div class="fixed-top">
+            <div style="padding: 0 18px;">
+                <div class="round-bar">
+                    <div class="round-bar-inner" id="roundBarInner"></div>
+                    <div class="round-label" id="roundLabel"></div>
+                </div>
+            </div>
+            <div class="players-scroll" id="playersScroll"></div>
+            <div class="turn-info" id="turnInfo"></div>
+        </div>
+        <div class="score-section" id="scoreSection">
+            <div id="scoreGrid"></div>
+        </div>
+        <div class="actions">
+            <button class="action-btn undo" id="undoBtn" disabled>Undo</button>
+            <button class="action-btn" id="nextBtn" disabled>Next Player</button>
+            <button class="action-btn end" id="endBtn">End Game</button>
+        </div>
+    </div>
+    <div class="winner" id="winner">
+        <div class="winner-banner" id="winnerBanner"></div>
+        <div class="final-scores" id="finalScores"></div>
+        <button class="new-game-btn" id="newGameBtn">New Game</button>
+    </div>
+</div>
+<script>
+const LOCAL_STORAGE_KEY = 'dartCountUpGameV7';
+
+function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
+
+let players = [], scores = {}, round = 1, currentPlayerIdx = 0, throws = [];
+const maxRounds = 8, throwsPerTurn = 3;
+let roundScores = {}, dartsThrown = {}, undoStack = [];
+
+const setupDiv = document.getElementById('setup');
+const playerNameInput = document.getElementById('playerName');
+const addPlayerBtn = document.getElementById('addPlayerBtn');
+const playersListDiv = document.getElementById('playersList');
+const startBtn = document.getElementById('startBtn');
+const gameDiv = document.getElementById('game');
+const roundBarInner = document.getElementById('roundBarInner');
+const roundLabel = document.getElementById('roundLabel');
+const playersScroll = document.getElementById('playersScroll');
+const turnInfo = document.getElementById('turnInfo');
+const scoreGridDiv = document.getElementById('scoreGrid');
+const undoBtn = document.getElementById('undoBtn');
+const nextBtn = document.getElementById('nextBtn');
+const endBtn = document.getElementById('endBtn');
+const winnerDiv = document.getElementById('winner');
+const winnerBanner = document.getElementById('winnerBanner');
+const finalScoresDiv = document.getElementById('finalScores');
+const newGameBtn = document.getElementById('newGameBtn');
+
+const predefinedPlayerSelect = document.getElementById('predefinedPlayerSelect');
+
+predefinedPlayerSelect.onchange = function() {
+    if (this.value) {
+        playerNameInput.value = this.value;
+        addPlayerBtn.click();
+        this.selectedIndex = 0; // Reset dropdown
+    }
+};
+
+// === Persistence ===
+function saveGameState() {
+    const state = {
+        players, scores, round, currentPlayerIdx, throws, roundScores, dartsThrown, undoStack
+    };
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
+}
+function loadGameState() {
+    const stateStr = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (!stateStr) return false;
+    try {
+        const state = JSON.parse(stateStr);
+        players = state.players || [];
+        scores = state.scores || {};
+        round = state.round || 1;
+        currentPlayerIdx = state.currentPlayerIdx || 0;
+        throws = state.throws || [];
+        roundScores = state.roundScores || {};
+        dartsThrown = state.dartsThrown || {};
+        undoStack = state.undoStack || [];
+        return true;
+    } catch { return false; }
+}
+
+function pushUndoState() {
+    undoStack.push({
+        players: deepClone(players),
+        scores: deepClone(scores),
+        round,
+        currentPlayerIdx,
+        throws: deepClone(throws),
+        roundScores: deepClone(roundScores),
+        dartsThrown: deepClone(dartsThrown)
+    });
+    if (undoStack.length > 200) undoStack.shift();
+    saveGameState();
+}
+
+addPlayerBtn.onclick = () => {
+    const name = playerNameInput.value.trim();
+    if (!name) return;
+    if (players.includes(name)) {
+        alert('Player already added!');
+        playerNameInput.value = '';
+        return;
+    }
+    players.push(name);
+    scores[name] = 0;
+    roundScores[name] = {};
+    dartsThrown[name] = 0;
+    playerNameInput.value = '';
+    updatePlayersList();
+    startBtn.disabled = players.length < 1;
+    saveGameState();
+};
+playerNameInput.addEventListener('keypress', e => { if (e.key === 'Enter') addPlayerBtn.click(); });
+function updatePlayersList() {
+    playersListDiv.innerHTML = '';
+    players.forEach(name => {
+        const chip = document.createElement('span');
+        chip.className = 'player-chip';
+        chip.innerHTML = `🎯 ${name} <button class="remove-btn" title="Remove" onclick="removePlayer('${name}')">&times;</button>`;
+        playersListDiv.appendChild(chip);
+    });
+}
+window.removePlayer = function(name) {
+    players = players.filter(p => p !== name);
+    delete scores[name];
+    delete roundScores[name];
+    delete dartsThrown[name];
+    playerNameInput.value = '';
+    updatePlayersList();
+    startBtn.disabled = players.length < 1;
+    saveGameState();
+};
+startBtn.onclick = () => {
+    if (players.length === 0) return;
+    setupDiv.style.display = 'none';
+    gameDiv.style.display = 'flex';
+    winnerDiv.style.display = 'none';
+    round = 1;
+    currentPlayerIdx = 0;
+    throws = [];
+    players.forEach(p => {
+        scores[p] = 0;
+        roundScores[p] = {};
+        dartsThrown[p] = 0;
+    });
+    undoStack = [];
+    updateGameUI();
+    saveGameState();
+};
+
+function updateGameUI() {
+    roundBarInner.style.width = ((round-1)/maxRounds*100) + '%';
+    roundLabel.textContent = `Round ${round} of ${maxRounds}`;
+    playersScroll.innerHTML = '';
+    let maxScore = Math.max(...players.map(p => scores[p]));
+    let leaderNames = players.filter(p => scores[p] === maxScore);
+    players.forEach((name, idx) => {
+        const card = document.createElement('div');
+        card.className = 'player-card' + (idx === currentPlayerIdx ? ' active' : '');
+        let darts = dartsThrown[name] || 0;
+        let ppd = darts ? (scores[name]/darts).toFixed(2) : '0.00';
+        let statText = '';
+        if (scores[name] === maxScore && leaderNames.length === 1) {
+            statText = 'Leader';
+        } else if (scores[name] === maxScore && leaderNames.length > 1) {
+            statText = 'Tied';
+        } else {
+            statText = `Behind by ${maxScore - scores[name]}`;
+        }
+        card.innerHTML = `
+          <div class="avatar">${name[0].toUpperCase()}</div>
+          <div class="player-name">${name}</div>
+          <div class="player-score">${scores[name]}</div>
+          <div class="player-stats">PPD: ${ppd} | ${statText}</div>
+          <div class="player-turn-scores" id="turnScores_${name}"></div>
+        `;
+        playersScroll.appendChild(card);
+        const tsDiv = card.querySelector('.player-turn-scores');
+        if (roundScores[name] && roundScores[name][round]) {
+            roundScores[name][round].forEach(sc => {
+                const badge = document.createElement('span');
+                badge.className = 'turn-score-badge';
+                badge.textContent = sc;
+                tsDiv.appendChild(badge);
+            });
+        } else if (idx === currentPlayerIdx) {
+            for (let i = 0; i < throwsPerTurn; ++i) {
+                const badge = document.createElement('span');
+                badge.className = 'turn-score-badge empty';
+                badge.textContent = '🎯';
+                if (throws[i] !== undefined) {
+                    badge.className = 'turn-score-badge';
+                    badge.textContent = throws[i];
+                }
+                tsDiv.appendChild(badge);
+            }
+        }
+    });
+    setTimeout(() => {
+        const act = playersScroll.querySelector('.player-card.active');
+        if (act) act.scrollIntoView({behavior: "smooth", inline: "center", block: "nearest"});
+    }, 50);
+    const name = players[currentPlayerIdx];
+    const ttotal = throws.reduce((a, b) => a + b, 0) || 0;
+    turnInfo.textContent = `${name}'s Turn — Total: ${ttotal}`;
+    if (!roundScores[name] || !roundScores[name][round] || throws.length < throwsPerTurn) {
+        buildScoreGrid();
+    } else {
+        scoreGridDiv.innerHTML = '';
+    }
+    undoBtn.disabled = undoStack.length === 0;
+    nextBtn.disabled = throws.length !== throwsPerTurn;
+    saveGameState();
+}
+
+function addThrow(score) {
+    if (throws.length >= throwsPerTurn) return;
+    pushUndoState();
+    throws.push(score);
+    const name = players[currentPlayerIdx];
+    dartsThrown[name] = (dartsThrown[name] || 0) + 1;
+    if (score === 50) {
+        const bullBtn = document.querySelector('.score-btn.bull');
+        if (bullBtn) {
+            bullBtn.classList.add('bullseye-anim');
+            setTimeout(() => bullBtn.classList.remove('bullseye-anim'), 500);
+        }
+    }
+    updateGameUI();
+}
+
+undoBtn.onclick = () => {
+    if (undoStack.length === 0) return;
+    const prev = undoStack.pop();
+    players = deepClone(prev.players);
+    scores = deepClone(prev.scores);
+    round = prev.round;
+    currentPlayerIdx = prev.currentPlayerIdx;
+    throws = deepClone(prev.throws);
+    roundScores = deepClone(prev.roundScores);
+    dartsThrown = deepClone(prev.dartsThrown);
+    updateGameUI();
+};
+
+nextBtn.onclick = () => {
+    if (throws.length !== throwsPerTurn) return;
+    pushUndoState();
+    const name = players[currentPlayerIdx];
+    scores[name] += throws.reduce((a, b) => a + b, 0);
+    roundScores[name][round] = [...throws];
+    throws = [];
+    if (currentPlayerIdx < players.length - 1) {
+        currentPlayerIdx++;
+    } else {
+        currentPlayerIdx = 0;
+        round++;
+        if (round > maxRounds) {
+            showWinner();
+            saveGameState();
+            return;
+        }
+    }
+    updateGameUI();
+};
+
+endBtn.onclick = () => {
+    if (confirm("Are you sure you want to finish the game?")) {
+        showWinner();
+        saveGameState();
+    }
+};
+
+function buildScoreGrid() {
+    scoreGridDiv.className = 'score-grid';
+    scoreGridDiv.innerHTML = '';
+    scoreGridDiv.appendChild(makeScoreBtn('MISS', 0, 'miss'));
+    scoreGridDiv.appendChild(makeScoreBtn('Bull', 25, 'bull25', '25'));
+    scoreGridDiv.appendChild(makeScoreBtn('Bull', 50, 'bull', '50'));
+    for (let i=1; i<=20; i++) scoreGridDiv.appendChild(makeScoreBtn(i, i, 'single', 'S'));
+    for (let i=1; i<=20; i++) scoreGridDiv.appendChild(makeScoreBtn(i, i*2, 'double', 'D'));
+    for (let i=1; i<=20; i++) scoreGridDiv.appendChild(makeScoreBtn(i, i*3, 'triple', 'T'));
+}
+function makeScoreBtn(label, value, type, dots='') {
+    const btn = document.createElement('button');
+    btn.className = `score-btn ${type}`;
+    btn.innerHTML = `<span>${label}</span>${dots?'<span class="dots">'+dots+'</span>':''}`;
+    btn.onclick = () => addThrow(value);
+    return btn;
+}
+
+// --- Google Sheets Integration ---
+function sendGameDataToGoogleSheet() {
+    const now = new Date();
+    const data = {
+        date: now.toLocaleDateString(),
+        time: now.toLocaleTimeString(),
+        playerNames: players,
+        scores: scores,
+        statistics: {
+            ppd: players.map(name => dartsThrown[name] ? (scores[name]/dartsThrown[name]).toFixed(2) : '0.00'),
+            dartsThrown: dartsThrown,
+            roundScores: roundScores
+        }
+    };
+    fetch('https://script.google.com/macros/s/AKfycbw2GWXUjCD4BDNAIClRuilAl5Cxi3dvbqV4IUqaTIMm7uPILrdyNGwKrojRtURiUhD6KA/exec', { // <-- Replace with your Google Apps Script Web App URL
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    });
+}
+
+
+function showWinner() {
+    gameDiv.style.display = 'none';
+    winnerDiv.style.display = 'flex';
+    let max = Math.max(...players.map(p=>scores[p]));
+    let winners = players.filter(p=>scores[p]===max);
+    winnerBanner.innerHTML = winners.length>1
+        ? `🏆 Tie! ${winners.join(' & ')}`
+        : `🏆 Winner: ${winners[0]}`;
+    confetti({
+        particleCount: 200,
+        spread: 100,
+        origin: { y: 0.6 }
+    });
+    finalScoresDiv.innerHTML = '';
+    let sorted = players.slice().sort((a,b)=>scores[b]-scores[a]);
+    sorted.forEach((name, idx) => {
+        let medal = idx===0 ? '🥇' : idx===1 ? '🥈' : idx===2 ? '🥉' : '';
+        let darts = dartsThrown[name] || 0;
+        let ppd = darts ? (scores[name]/darts).toFixed(2) : '0.00';
+        let maxScore = Math.max(...players.map(p=>scores[p]));
+        let statText = '';
+        if (scores[name] === maxScore && sorted.filter(p=>scores[p]===maxScore).length === 1) {
+            statText = 'Leader';
+        } else if (scores[name] === maxScore) {
+            statText = 'Tied';
+        } else {
+            statText = `Behind by ${maxScore - scores[name]}`;
+        }
+        finalScoresDiv.innerHTML += `
+        <div class="final-score-row">
+            <div>${medal} ${name}</div>
+            <div class="stat-label">Score</div>
+            <div class="stat-value">${scores[name]}</div>
+            <div class="stat-label">PPD</div>
+            <div class="stat-value">${ppd}</div>
+            <div class="stat-label">Darts</div>
+            <div class="stat-value">${darts}</div>
+            <div class="stat-label">${statText}</div>
+        </div>`;
+    });
+    saveGameState();
+	sendGameDataToGoogleSheet(); // <-- Send data to Google Sheet after game ends
+}
+newGameBtn.onclick = () => {
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
+    players = [];
+    scores = {};
+    round = 1;
+    currentPlayerIdx = 0;
+    throws = [];
+    roundScores = {};
+    dartsThrown = {};
+    undoStack = [];
+    setupDiv.style.display = 'flex';
+    gameDiv.style.display = 'none';
+    winnerDiv.style.display = 'none';
+    updatePlayersList();
+    startBtn.disabled = true;
+    playerNameInput.value = '';
+    saveGameState();
+};
+
+function initialize() {
+    if (loadGameState()) {
+        if (players.length && round <= maxRounds) {
+            setupDiv.style.display = 'none';
+            gameDiv.style.display = 'flex';
+            winnerDiv.style.display = 'none';
+            updateGameUI();
+        } else if (round > maxRounds && players.length) {
+            setupDiv.style.display = 'none';
+            gameDiv.style.display = 'none';
+            winnerDiv.style.display = 'flex';
+            showWinner();
+        } else {
+            setupDiv.style.display = 'flex';
+            gameDiv.style.display = 'none';
+            winnerDiv.style.display = 'none';
+            updatePlayersList();
+            startBtn.disabled = players.length === 0;
+        }
+    } else {
+        updatePlayersList();
+        startBtn.disabled = true;
+        setupDiv.style.display = 'flex';
+        gameDiv.style.display = 'none';
+        winnerDiv.style.display = 'none';
+    }
+}
+initialize();
+</script>
+    </div>
+
+    <script>
+        // Global variables to track current game state
+        let currentGame = null;
+        let game1Initialized = false;
+        let game2Initialized = false;
+
+        // Game Selection and Navigation Functions
+        function selectGame(gameId) {
+            // Hide game selector
+            document.getElementById('gameSelector').style.display = 'none';
+
+            // Show selected game
+            const gameElement = document.getElementById(gameId);
+            gameElement.style.display = 'block';
+            gameElement.classList.remove('hidden');
+
+            currentGame = gameId;
+
+            // Initialize the selected game if not already initialized
+            if (gameId === 'game1' && !game1Initialized) {
+                initGame1();
+                game1Initialized = true;
+            } else if (gameId === 'game2' && !game2Initialized) {
+                initGame2();
+                game2Initialized = true;
+            }
+        }
+
+        function showGameSelector() {
+            // Hide all games
+            document.getElementById('game1').style.display = 'none';
+            document.getElementById('game1').classList.add('hidden');
+            document.getElementById('game2').style.display = 'none';
+            document.getElementById('game2').classList.add('hidden');
+
+            // Show game selector
+            document.getElementById('gameSelector').style.display = 'flex';
+
+            currentGame = null;
+        }
+
+        // Game 1 JavaScript (Classic 01) 
+        function initGame1() {
+            // Set context to game1 container for DOM queries
+            const gameContext = document.getElementById('game1');
+
+            // Override document.getElementById to scope to game1 container
+            const originalGetElementById = document.getElementById;
+            document.getElementById = function(id) {
+                const element = gameContext.querySelector('#' + id);
+                return element || originalGetElementById.call(document, id);
+            };
+
+            try {
+                // Execute Game 1 JavaScript with 5-column layout
+                // --- UTILITIES ---
+function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
+
+// --- STATE MANAGEMENT ---
+let players = [], scores = {}, currentPlayerIdx = 0, throws = [];
+let roundScores = {}, dartsThrown = {}, undoStack = [];
+let startingScore = 501, inRule = 'straight', outRule = 'double';
+let playerHasOpened = {}, winnerFound = false, currentTurnStartScore = 0;
+const throwsPerTurn = 3;
+
+// --- DOM ELEMENTS ---
+const setupDiv = document.getElementById('setup');
+const playerNameInput = document.getElementById('playerName');
+const addPlayerBtn = document.getElementById('addPlayerBtn');
+const playersListDiv = document.getElementById('playersList');
+const startBtn = document.getElementById('startBtn');
+const predefinedPlayerSelect = document.getElementById('predefinedPlayerSelect');
+const gameDiv = document.getElementById('game');
+const roundBarInner = document.getElementById('roundBarInner');
+const roundLabel = document.getElementById('roundLabel');
+const playersScroll = document.getElementById('playersScroll');
+const turnInfo = document.getElementById('turnInfo');
+const scoreGridDiv = document.getElementById('scoreGrid');
+const undoBtn = document.getElementById('undoBtn');
+const nextBtn = document.getElementById('nextBtn');
+const endBtn = document.getElementById('endBtn');
+const winnerDiv = document.getElementById('winner');
+const winnerBanner = document.getElementById('winnerBanner');
+const finalScoresDiv = document.getElementById('finalScores');
+const newGameBtn = document.getElementById('newGameBtn');
+const gameType = document.getElementById('gameType');
+const inType = document.getElementById('inType');
+const outType = document.getElementById('outType');
+
+// --- SETUP PHASE ---
+predefinedPlayerSelect.onchange = function() {
+    if (this.value) {
+        playerNameInput.value = this.value;
+        addPlayerBtn.click();
+        this.value = ''; // Reset dropdown after adding
+    }
+};
+
+addPlayerBtn.onclick = () => {
+    const name = playerNameInput.value.trim();
+    if (!name || players.includes(name)) {
+        playerNameInput.value = '';
+        return;
+    }
+    players.push(name);
+    playerNameInput.value = '';
+    updatePlayersList();
+    startBtn.disabled = players.length < 1;
+};
+playerNameInput.addEventListener('keypress', e => { if (e.key === 'Enter') addPlayerBtn.click(); });
+
+function updatePlayersList() {
+    playersListDiv.innerHTML = '';
+    players.forEach(name => {
+        const chip = document.createElement('span');
+        chip.className = 'player-chip';
+        chip.innerHTML = `🎯 ${name} <button class="remove-btn" title="Remove" onclick="removePlayer('${name}')">×</button>`;
+        playersListDiv.appendChild(chip);
+    });
+}
+window.removePlayer = (name) => {
+    players = players.filter(p => p !== name);
+    updatePlayersList();
+    startBtn.disabled = players.length < 1;
+};
+
+// --- GAME LIFECYCLE ---
+startBtn.onclick = () => {
+    if (players.length === 0) return;
+    // 1. Initialize game state from selections
+    startingScore = parseInt(gameType.value, 10);
+    inRule = inType.value;
+    outRule = outType.value;
+    currentPlayerIdx = 0;
+    throws = [];
+    winnerFound = false;
+    undoStack = [];
+    playerHasOpened = {};
+    roundScores = {};
+    dartsThrown = {};
+
+    // 2. Set up each player
+    players.forEach(p => {
+        scores[p] = startingScore;
+        roundScores[p] = [];
+        dartsThrown[p] = 0;
+        playerHasOpened[p] = (inRule === 'straight');
+    });
+
+    // 3. Transition UI and start the first turn
+    setupDiv.style.display = 'none';
+    winnerDiv.style.display = 'none';
+    gameDiv.style.display = 'flex';
+    startTurn();
+};
+
+function startTurn() {
+    const name = players[currentPlayerIdx];
+    currentTurnStartScore = scores[name]; // Store score for bust logic
+    throws = [];
+    updateGameUI();
+}
+
+function nextPlayer() {
+    if (winnerFound) return;
+    const name = players[currentPlayerIdx];
+    if (!roundScores[name]) roundScores[name] = [];
+    roundScores[name].push(deepClone(throws)); // Log the completed turn
+    
+    currentPlayerIdx = (currentPlayerIdx + 1) % players.length;
+    startTurn();
+}
+
+endBtn.onclick = () => {
+    if (confirm("Are you sure you want to end the game? This action cannot be undone.")) {
+        winnerFound = true;
+        showWinner();
+    }
+};
+
+newGameBtn.onclick = () => {
+    setupDiv.style.display = 'flex';
+    gameDiv.style.display = 'none';
+    winnerDiv.style.display = 'none';
+    players = [];
+    updatePlayersList();
+    startBtn.disabled = true;
+    playerNameInput.value = '';
+};
+
+// --- CORE GAME LOGIC ---
+function addThrow(score, type) {
+    if (throws.length >= throwsPerTurn || winnerFound) return;
+
+    pushUndoState(); 
+
+    const name = players[currentPlayerIdx];
+    const isCurrentlyOpen = playerHasOpened[name];
+    let isScoringThrow = isCurrentlyOpen;
+    
+    dartsThrown[name]++;
+    const thisThrow = { score, type, valid: false };
+    throws.push(thisThrow);
+
+    // 1. "IN" RULE LOGIC
+    if (!isCurrentlyOpen) {
+        const meetsInRule = (inRule === 'double' && type === 'double') ||
+                            (inRule === 'triple' && type === 'triple') ||
+                            (inRule === 'master' && (type === 'double' || type === 'triple'));
+        if (meetsInRule) {
+            playerHasOpened[name] = true;
+            isScoringThrow = true;
+        }
+    }
+
+    // 2. SCORING AND "OUT" / BUST LOGIC
+    if (isScoringThrow) {
+        const newScore = scores[name] - score;
+        let isBust = false;
+
+        if (newScore === 0) { // Potential WIN, but requires validation
+            const meetsOutRule = (outRule === 'straight') ||
+                                 (outRule === 'double' && type === 'double') ||
+                                 (outRule === 'triple' && type === 'triple') ||
+                                 (outRule === 'master' && (type === 'double' || type === 'triple'));
+            if (!meetsOutRule) {
+                isBust = true;
+            } else {
+                // Valid win, ask for confirmation
+                scores[name] = newScore;
+                updateGameUI(); // Update UI to show 0 before confirming
+                setTimeout(() => { // Timeout to allow UI to update
+                    if (confirm(`🏆 ${name} has won! End the game?`)) {
+                        winnerFound = true;
+                        showWinner();
+                    } else {
+                        // User cancelled, so undo the last (winning) throw
+                        undoBtn.click(); 
+                    }
+                }, 100);
+                return; // Stop further processing for this throw
+            }
+        } else if (newScore < 0 || (newScore === 1 && outRule !== 'straight')) {
+            isBust = true;
+        }
+
+        if (isBust) {
+            scores[name] = currentTurnStartScore;
+            showInvalidThrowAnimation(name);
+            while (throws.length < throwsPerTurn) throws.push({ score: 'B', type: 'bust', valid: false });
+        } else {
+            thisThrow.valid = true;
+            scores[name] = newScore;
+        }
+    } else {
+        // FAILED "IN" RULE
+        showInvalidThrowAnimation(name);
+    }
+    
+    updateGameUI();
+}
+
+
+// --- UNDO LOGIC ---
+function pushUndoState() {
+    undoStack.push({
+        scores: deepClone(scores),
+        currentPlayerIdx,
+        throws: deepClone(throws),
+        roundScores: deepClone(roundScores),
+        dartsThrown: deepClone(dartsThrown),
+        playerHasOpened: deepClone(playerHasOpened),
+        winnerFound,
+        currentTurnStartScore
+    });
+    if (undoStack.length > 50) undoStack.shift();
+}
+
+undoBtn.onclick = () => {
+    if (undoStack.length === 0) return;
+    const prevState = undoStack.pop();
+    scores = prevState.scores;
+    currentPlayerIdx = prevState.currentPlayerIdx;
+    throws = prevState.throws;
+    roundScores = prevState.roundScores;
+    dartsThrown = prevState.dartsThrown;
+    playerHasOpened = prevState.playerHasOpened;
+    winnerFound = prevState.winnerFound;
+    currentTurnStartScore = prevState.currentTurnStartScore;
+    updateGameUI();
+};
+
+// --- UI AND ANIMATIONS ---
+function showInvalidThrowAnimation(playerName) {
+    const card = Array.from(document.querySelectorAll('.player-card')).find(c => c.querySelector('.player-name').textContent === playerName);
+    if (card) {
+        card.classList.add('shake-animation');
+        setTimeout(() => card.classList.remove('shake-animation'), 600);
+    }
+}
+
+function updateGameUI() {
+    const name = players[currentPlayerIdx];
+    
+    const progress = Math.max(0, (startingScore - (scores[name] || startingScore)) / startingScore * 100);
+    roundBarInner.style.width = `${progress}%`;
+    roundLabel.textContent = `Target: ${startingScore}`;
+
+    playersScroll.innerHTML = '';
+    const minScore = Math.min(...players.map(p => scores[p] > 0 ? scores[p] : Infinity));
+    players.forEach((pName, idx) => {
+        const card = document.createElement('div');
+        card.className = 'player-card' + (idx === currentPlayerIdx ? ' active' : '');
+        const darts = dartsThrown[pName] || 0;
+        const ppd = darts ? ((startingScore - scores[pName]) / darts).toFixed(2) : '0.00';
+        
+        let statText = 'Winner!';
+        if (scores[pName] > 0) {
+            if (!playerHasOpened[pName]) {
+                statText = 'Waiting to Open';
+            } else if (scores[pName] === minScore) {
+                statText = 'Leader';
+            } else {
+                statText = `+${scores[pName] - minScore}`;
+            }
+        }
+        
+        card.innerHTML = `
+          <div class="avatar">${pName[0].toUpperCase()}</div>
+          <div class="player-name">${pName}</div>
+          <div class="player-score">${scores[pName]}</div>
+          <div class="player-stats">${statText} | PPD: ${ppd}</div>
+          <div class="player-turn-scores"></div>
+        `;
+        playersScroll.appendChild(card);
+        
+        const tsDiv = card.querySelector('.player-turn-scores');
+        const turnDisplay = (idx === currentPlayerIdx) ? throws : (roundScores[pName]?.slice(-1)[0] || []);
+        for (let i = 0; i < throwsPerTurn; i++) {
+            const badge = document.createElement('span');
+            badge.className = 'turn-score-badge empty';
+            badge.innerHTML = '&ndash;';
+            if (turnDisplay[i]) {
+                if (turnDisplay[i].valid) {
+                    badge.className = 'turn-score-badge';
+                    badge.textContent = turnDisplay[i].score;
+                } else {
+                    badge.className = 'turn-score-badge invalid';
+                    badge.textContent = '🥚'; // Display egg for invalid throws
+                }
+            }
+            tsDiv.appendChild(badge);
+        }
+    });
+
+    const activeCard = playersScroll.querySelector('.player-card.active');
+    if (activeCard) activeCard.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+
+    const turnTotal = throws.filter(t => t.valid).reduce((sum, t) => sum + t.score, 0);
+    turnInfo.textContent = `${name}'s Turn — Threw: ${turnTotal} | Remaining: ${scores[name]}`;
+
+    const turnOver = throws.length >= throwsPerTurn;
+    undoBtn.disabled = undoStack.length === 0;
+    nextBtn.disabled = !turnOver || winnerFound;
+    
+    scoreGridDiv.style.display = turnOver || winnerFound ? 'none' : 'grid';
+}
+
+function buildScoreGrid() {
+    scoreGridDiv.innerHTML = '';
+    const addBtn = (label, val, css, type, dots) => {
+        const btn = document.createElement('button');
+        btn.className = `score-btn ${css}`;
+        btn.innerHTML = `<span>${label}</span>${dots ? `<span class="dots">${dots}</span>` : ''}`;
+        btn.onclick = () => addThrow(val, type);
+        scoreGridDiv.appendChild(btn);
+    };
+    addBtn('MISS', 0, 'miss', 'single');
+    addBtn('Bull', 25, 'bull25', 'single', '25');
+    addBtn('Bull', 50, 'bull', 'double', 'D•50');
+    for (let i = 1; i <= 20; i++) addBtn(i, i, 'single', 'single', 'S');
+    for (let i = 1; i <= 20; i++) addBtn(i, i * 2, 'double', 'double', 'D');
+    for (let i = 1; i <= 20; i++) addBtn(i, i * 3, 'triple', 'triple', 'T');
+}
+
+function showWinner() {
+    gameDiv.style.display = 'none';
+    winnerDiv.style.display = 'flex';
+    
+    const winners = players.filter(p => scores[p] === 0);
+    winnerBanner.textContent = winners.length > 0 ? `🏆 Winner: ${winners.join(' & ')} 🏆` : "Game Over";
+    
+    confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+    
+    finalScoresDiv.innerHTML = '';
+    const sortedPlayers = players.slice().sort((a, b) => scores[a] - scores[b]);
+    sortedPlayers.forEach((pName, idx) => {
+        const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '';
+        const darts = dartsThrown[pName] || 0;
+        const ppd = darts ? ((startingScore - scores[pName]) / darts).toFixed(2) : '0.00';
+        
+        const row = document.createElement('div');
+        row.className = 'final-score-row';
+        row.innerHTML = `
+            <div>${medal} ${pName}</div>
+            <div class="stat-label">Final Score</div>
+            <div class="stat-value">${scores[pName]}</div>
+            <div class="stat-label">PPD / Darts</div>
+            <div class="stat-value">${ppd} / ${darts}</div>
+        `;
+        finalScoresDiv.appendChild(row);
+    });
+}
+
+// --- INITIALIZATION ---
+nextBtn.onclick = nextPlayer;
+buildScoreGrid();
+updatePlayersList();
+startBtn.disabled = true;
+            } catch(error) {
+                console.error('Error initializing Game 1:', error);
+            } finally {
+                // Restore original getElementById
+                document.getElementById = originalGetElementById;
+            }
+        }
+
+        // Game 2 JavaScript (Count-Up)
+        function initGame2() {
+            // Set context to game2 container for DOM queries
+            const gameContext = document.getElementById('game2');
+
+            // Override document.getElementById to scope to game2 container
+            const originalGetElementById = document.getElementById;
+            document.getElementById = function(id) {
+                const element = gameContext.querySelector('#' + id);
+                return element || originalGetElementById.call(document, id);
+            };
+
+            try {
+                // Execute Game 2 JavaScript with 5-column layout
+                const LOCAL_STORAGE_KEY = 'dartCountUpGameV7';
+
+function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
+
+let players = [], scores = {}, round = 1, currentPlayerIdx = 0, throws = [];
+const maxRounds = 8, throwsPerTurn = 3;
+let roundScores = {}, dartsThrown = {}, undoStack = [];
+
+const setupDiv = document.getElementById('setup');
+const playerNameInput = document.getElementById('playerName');
+const addPlayerBtn = document.getElementById('addPlayerBtn');
+const playersListDiv = document.getElementById('playersList');
+const startBtn = document.getElementById('startBtn');
+const gameDiv = document.getElementById('game');
+const roundBarInner = document.getElementById('roundBarInner');
+const roundLabel = document.getElementById('roundLabel');
+const playersScroll = document.getElementById('playersScroll');
+const turnInfo = document.getElementById('turnInfo');
+const scoreGridDiv = document.getElementById('scoreGrid');
+const undoBtn = document.getElementById('undoBtn');
+const nextBtn = document.getElementById('nextBtn');
+const endBtn = document.getElementById('endBtn');
+const winnerDiv = document.getElementById('winner');
+const winnerBanner = document.getElementById('winnerBanner');
+const finalScoresDiv = document.getElementById('finalScores');
+const newGameBtn = document.getElementById('newGameBtn');
+
+const predefinedPlayerSelect = document.getElementById('predefinedPlayerSelect');
+
+predefinedPlayerSelect.onchange = function() {
+    if (this.value) {
+        playerNameInput.value = this.value;
+        addPlayerBtn.click();
+        this.selectedIndex = 0; // Reset dropdown
+    }
+};
+
+// === Persistence ===
+function saveGameState() {
+    const state = {
+        players, scores, round, currentPlayerIdx, throws, roundScores, dartsThrown, undoStack
+    };
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
+}
+function loadGameState() {
+    const stateStr = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (!stateStr) return false;
+    try {
+        const state = JSON.parse(stateStr);
+        players = state.players || [];
+        scores = state.scores || {};
+        round = state.round || 1;
+        currentPlayerIdx = state.currentPlayerIdx || 0;
+        throws = state.throws || [];
+        roundScores = state.roundScores || {};
+        dartsThrown = state.dartsThrown || {};
+        undoStack = state.undoStack || [];
+        return true;
+    } catch { return false; }
+}
+
+function pushUndoState() {
+    undoStack.push({
+        players: deepClone(players),
+        scores: deepClone(scores),
+        round,
+        currentPlayerIdx,
+        throws: deepClone(throws),
+        roundScores: deepClone(roundScores),
+        dartsThrown: deepClone(dartsThrown)
+    });
+    if (undoStack.length > 200) undoStack.shift();
+    saveGameState();
+}
+
+addPlayerBtn.onclick = () => {
+    const name = playerNameInput.value.trim();
+    if (!name) return;
+    if (players.includes(name)) {
+        alert('Player already added!');
+        playerNameInput.value = '';
+        return;
+    }
+    players.push(name);
+    scores[name] = 0;
+    roundScores[name] = {};
+    dartsThrown[name] = 0;
+    playerNameInput.value = '';
+    updatePlayersList();
+    startBtn.disabled = players.length < 1;
+    saveGameState();
+};
+playerNameInput.addEventListener('keypress', e => { if (e.key === 'Enter') addPlayerBtn.click(); });
+function updatePlayersList() {
+    playersListDiv.innerHTML = '';
+    players.forEach(name => {
+        const chip = document.createElement('span');
+        chip.className = 'player-chip';
+        chip.innerHTML = `🎯 ${name} <button class="remove-btn" title="Remove" onclick="removePlayer('${name}')">&times;</button>`;
+        playersListDiv.appendChild(chip);
+    });
+}
+window.removePlayer = function(name) {
+    players = players.filter(p => p !== name);
+    delete scores[name];
+    delete roundScores[name];
+    delete dartsThrown[name];
+    playerNameInput.value = '';
+    updatePlayersList();
+    startBtn.disabled = players.length < 1;
+    saveGameState();
+};
+startBtn.onclick = () => {
+    if (players.length === 0) return;
+    setupDiv.style.display = 'none';
+    gameDiv.style.display = 'flex';
+    winnerDiv.style.display = 'none';
+    round = 1;
+    currentPlayerIdx = 0;
+    throws = [];
+    players.forEach(p => {
+        scores[p] = 0;
+        roundScores[p] = {};
+        dartsThrown[p] = 0;
+    });
+    undoStack = [];
+    updateGameUI();
+    saveGameState();
+};
+
+function updateGameUI() {
+    roundBarInner.style.width = ((round-1)/maxRounds*100) + '%';
+    roundLabel.textContent = `Round ${round} of ${maxRounds}`;
+    playersScroll.innerHTML = '';
+    let maxScore = Math.max(...players.map(p => scores[p]));
+    let leaderNames = players.filter(p => scores[p] === maxScore);
+    players.forEach((name, idx) => {
+        const card = document.createElement('div');
+        card.className = 'player-card' + (idx === currentPlayerIdx ? ' active' : '');
+        let darts = dartsThrown[name] || 0;
+        let ppd = darts ? (scores[name]/darts).toFixed(2) : '0.00';
+        let statText = '';
+        if (scores[name] === maxScore && leaderNames.length === 1) {
+            statText = 'Leader';
+        } else if (scores[name] === maxScore && leaderNames.length > 1) {
+            statText = 'Tied';
+        } else {
+            statText = `Behind by ${maxScore - scores[name]}`;
+        }
+        card.innerHTML = `
+          <div class="avatar">${name[0].toUpperCase()}</div>
+          <div class="player-name">${name}</div>
+          <div class="player-score">${scores[name]}</div>
+          <div class="player-stats">PPD: ${ppd} | ${statText}</div>
+          <div class="player-turn-scores" id="turnScores_${name}"></div>
+        `;
+        playersScroll.appendChild(card);
+        const tsDiv = card.querySelector('.player-turn-scores');
+        if (roundScores[name] && roundScores[name][round]) {
+            roundScores[name][round].forEach(sc => {
+                const badge = document.createElement('span');
+                badge.className = 'turn-score-badge';
+                badge.textContent = sc;
+                tsDiv.appendChild(badge);
+            });
+        } else if (idx === currentPlayerIdx) {
+            for (let i = 0; i < throwsPerTurn; ++i) {
+                const badge = document.createElement('span');
+                badge.className = 'turn-score-badge empty';
+                badge.textContent = '🎯';
+                if (throws[i] !== undefined) {
+                    badge.className = 'turn-score-badge';
+                    badge.textContent = throws[i];
+                }
+                tsDiv.appendChild(badge);
+            }
+        }
+    });
+    setTimeout(() => {
+        const act = playersScroll.querySelector('.player-card.active');
+        if (act) act.scrollIntoView({behavior: "smooth", inline: "center", block: "nearest"});
+    }, 50);
+    const name = players[currentPlayerIdx];
+    const ttotal = throws.reduce((a, b) => a + b, 0) || 0;
+    turnInfo.textContent = `${name}'s Turn — Total: ${ttotal}`;
+    if (!roundScores[name] || !roundScores[name][round] || throws.length < throwsPerTurn) {
+        buildScoreGrid();
+    } else {
+        scoreGridDiv.innerHTML = '';
+    }
+    undoBtn.disabled = undoStack.length === 0;
+    nextBtn.disabled = throws.length !== throwsPerTurn;
+    saveGameState();
+}
+
+function addThrow(score) {
+    if (throws.length >= throwsPerTurn) return;
+    pushUndoState();
+    throws.push(score);
+    const name = players[currentPlayerIdx];
+    dartsThrown[name] = (dartsThrown[name] || 0) + 1;
+    if (score === 50) {
+        const bullBtn = document.querySelector('.score-btn.bull');
+        if (bullBtn) {
+            bullBtn.classList.add('bullseye-anim');
+            setTimeout(() => bullBtn.classList.remove('bullseye-anim'), 500);
+        }
+    }
+    updateGameUI();
+}
+
+undoBtn.onclick = () => {
+    if (undoStack.length === 0) return;
+    const prev = undoStack.pop();
+    players = deepClone(prev.players);
+    scores = deepClone(prev.scores);
+    round = prev.round;
+    currentPlayerIdx = prev.currentPlayerIdx;
+    throws = deepClone(prev.throws);
+    roundScores = deepClone(prev.roundScores);
+    dartsThrown = deepClone(prev.dartsThrown);
+    updateGameUI();
+};
+
+nextBtn.onclick = () => {
+    if (throws.length !== throwsPerTurn) return;
+    pushUndoState();
+    const name = players[currentPlayerIdx];
+    scores[name] += throws.reduce((a, b) => a + b, 0);
+    roundScores[name][round] = [...throws];
+    throws = [];
+    if (currentPlayerIdx < players.length - 1) {
+        currentPlayerIdx++;
+    } else {
+        currentPlayerIdx = 0;
+        round++;
+        if (round > maxRounds) {
+            showWinner();
+            saveGameState();
+            return;
+        }
+    }
+    updateGameUI();
+};
+
+endBtn.onclick = () => {
+    if (confirm("Are you sure you want to finish the game?")) {
+        showWinner();
+        saveGameState();
+    }
+};
+
+function buildScoreGrid() {
+    scoreGridDiv.className = 'score-grid';
+    scoreGridDiv.innerHTML = '';
+    scoreGridDiv.appendChild(makeScoreBtn('MISS', 0, 'miss'));
+    scoreGridDiv.appendChild(makeScoreBtn('Bull', 25, 'bull25', '25'));
+    scoreGridDiv.appendChild(makeScoreBtn('Bull', 50, 'bull', '50'));
+    for (let i=1; i<=20; i++) scoreGridDiv.appendChild(makeScoreBtn(i, i, 'single', 'S'));
+    for (let i=1; i<=20; i++) scoreGridDiv.appendChild(makeScoreBtn(i, i*2, 'double', 'D'));
+    for (let i=1; i<=20; i++) scoreGridDiv.appendChild(makeScoreBtn(i, i*3, 'triple', 'T'));
+}
+function makeScoreBtn(label, value, type, dots='') {
+    const btn = document.createElement('button');
+    btn.className = `score-btn ${type}`;
+    btn.innerHTML = `<span>${label}</span>${dots?'<span class="dots">'+dots+'</span>':''}`;
+    btn.onclick = () => addThrow(value);
+    return btn;
+}
+
+// --- Google Sheets Integration ---
+function sendGameDataToGoogleSheet() {
+    const now = new Date();
+    const data = {
+        date: now.toLocaleDateString(),
+        time: now.toLocaleTimeString(),
+        playerNames: players,
+        scores: scores,
+        statistics: {
+            ppd: players.map(name => dartsThrown[name] ? (scores[name]/dartsThrown[name]).toFixed(2) : '0.00'),
+            dartsThrown: dartsThrown,
+            roundScores: roundScores
+        }
+    };
+    fetch('https://script.google.com/macros/s/AKfycbw2GWXUjCD4BDNAIClRuilAl5Cxi3dvbqV4IUqaTIMm7uPILrdyNGwKrojRtURiUhD6KA/exec', { // <-- Replace with your Google Apps Script Web App URL
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    });
+}
+
+
+function showWinner() {
+    gameDiv.style.display = 'none';
+    winnerDiv.style.display = 'flex';
+    let max = Math.max(...players.map(p=>scores[p]));
+    let winners = players.filter(p=>scores[p]===max);
+    winnerBanner.innerHTML = winners.length>1
+        ? `🏆 Tie! ${winners.join(' & ')}`
+        : `🏆 Winner: ${winners[0]}`;
+    confetti({
+        particleCount: 200,
+        spread: 100,
+        origin: { y: 0.6 }
+    });
+    finalScoresDiv.innerHTML = '';
+    let sorted = players.slice().sort((a,b)=>scores[b]-scores[a]);
+    sorted.forEach((name, idx) => {
+        let medal = idx===0 ? '🥇' : idx===1 ? '🥈' : idx===2 ? '🥉' : '';
+        let darts = dartsThrown[name] || 0;
+        let ppd = darts ? (scores[name]/darts).toFixed(2) : '0.00';
+        let maxScore = Math.max(...players.map(p=>scores[p]));
+        let statText = '';
+        if (scores[name] === maxScore && sorted.filter(p=>scores[p]===maxScore).length === 1) {
+            statText = 'Leader';
+        } else if (scores[name] === maxScore) {
+            statText = 'Tied';
+        } else {
+            statText = `Behind by ${maxScore - scores[name]}`;
+        }
+        finalScoresDiv.innerHTML += `
+        <div class="final-score-row">
+            <div>${medal} ${name}</div>
+            <div class="stat-label">Score</div>
+            <div class="stat-value">${scores[name]}</div>
+            <div class="stat-label">PPD</div>
+            <div class="stat-value">${ppd}</div>
+            <div class="stat-label">Darts</div>
+            <div class="stat-value">${darts}</div>
+            <div class="stat-label">${statText}</div>
+        </div>`;
+    });
+    saveGameState();
+	sendGameDataToGoogleSheet(); // <-- Send data to Google Sheet after game ends
+}
+newGameBtn.onclick = () => {
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
+    players = [];
+    scores = {};
+    round = 1;
+    currentPlayerIdx = 0;
+    throws = [];
+    roundScores = {};
+    dartsThrown = {};
+    undoStack = [];
+    setupDiv.style.display = 'flex';
+    gameDiv.style.display = 'none';
+    winnerDiv.style.display = 'none';
+    updatePlayersList();
+    startBtn.disabled = true;
+    playerNameInput.value = '';
+    saveGameState();
+};
+
+function initialize() {
+    if (loadGameState()) {
+        if (players.length && round <= maxRounds) {
+            setupDiv.style.display = 'none';
+            gameDiv.style.display = 'flex';
+            winnerDiv.style.display = 'none';
+            updateGameUI();
+        } else if (round > maxRounds && players.length) {
+            setupDiv.style.display = 'none';
+            gameDiv.style.display = 'none';
+            winnerDiv.style.display = 'flex';
+            showWinner();
+        } else {
+            setupDiv.style.display = 'flex';
+            gameDiv.style.display = 'none';
+            winnerDiv.style.display = 'none';
+            updatePlayersList();
+            startBtn.disabled = players.length === 0;
+        }
+    } else {
+        updatePlayersList();
+        startBtn.disabled = true;
+        setupDiv.style.display = 'flex';
+        gameDiv.style.display = 'none';
+        winnerDiv.style.display = 'none';
+    }
+}
+initialize();
+            } catch(error) {
+                console.error('Error initializing Game 2:', error);
+            } finally {
+                // Restore original getElementById
+                document.getElementById = originalGetElementById;
+            }
+        }
+
+        // Initialize the app when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Start with game selector visible
+            showGameSelector();
+        });
+    </script>
+</body>
+</html>
