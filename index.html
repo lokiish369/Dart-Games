@@ -321,12 +321,58 @@ body { font-family: 'Orbitron', sans-serif; min-height: 100vh; }
 #game2 .players-scroll::-webkit-scrollbar-thumb { background: rgba(0, 255, 255, 0.5); border-radius: 4px; }
 #game2 .score-section::-webkit-scrollbar { width: 8px; }
 #game2 .score-section::-webkit-scrollbar-thumb { background: rgba(0, 255, 255, 0.5); border-radius: 4px; }
-    </style>
+    
+/* --- Tournament leaderboard responsive tweaks --- */
+.tournament-compact-header {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.tournament-compact-header .toggle-btn {
+  background: rgba(0,0,51,0.85);
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 0.85rem;
+  border: 1px solid rgba(255,255,255,0.06);
+  cursor: pointer;
+}
+.tournament-leaderboard {
+  max-height: 320px;
+  overflow-y: auto;
+}
+@media (max-width: 640px) {
+  .tournament-in-game { padding: 8px 12px; }
+  .tournament-in-game .tournament-mini { font-size: 0.85rem; padding: 6px; }
+  .tournament-compact-header { display:flex; }
+  .tournament-leaderboard { max-height: 160px; font-size: 0.88rem; padding: 6px; }
+  .tournament-row { padding: 6px 8px; font-size: 0.9rem; }
+}
+
+#tournamentLeaderboardContainer {
+  width: 100%;
+  display: none;
+  text-align: center;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+#tournamentLeaderboardContainer .tournament-leaderboard {
+  display: inline-block;
+  text-align: left;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+
+</style>
 </head>
 <body>
     <!-- Game Selection Screen -->
     <div id="gameSelector" class="game-selector">
-        <h1>🎯 Dart Games Collection by LHS</h1>
+        <h1>🎯 Dart Games Collection </h1>
         <div class="game-options">
             <div class="game-option" onclick="selectGame('game1')">
                 <h2>🎯 Classic 01</h2>
@@ -337,7 +383,7 @@ body { font-family: 'Orbitron', sans-serif; min-height: 100vh; }
                 <p>Accumulate points as you play! See who can reach the highest score. Practice mode!</p>
             </div>
         </div>
-		<div style="margin-top:40px; font-size:13px; color:#ccc; letter-spacing:0.5px; text-align:center;">
+	<div style="margin-top:40px; font-size:13px; color:#ccc; letter-spacing:0.5px; text-align:center;">
         &copy; LHS [Lokesh, Hemanth, Sreejith]
     	</div>
     </div>
@@ -378,22 +424,22 @@ body { font-family: 'Orbitron', sans-serif; min-height: 100vh; }
         </div>
         <div class="player-input-row">
             <select id="predefinedPlayerSelect">
-        <option value="">Select player...</option>
-        <option value="Amit">Amit</option>
+                <option value="">Select player...</option>
+                <option value="Amit">Amit</option>
 		<option value="Anjali">Anjali</option>
 		<option value="Ankit">Ankit</option>
 		<option value="D">D</option>
 		<option value="DSP">DSP</option>
 		<option value="Gayathri">Gayathri</option>
-        <option value="Hemanth">Hemanth</option>
+        	<option value="Hemanth">Hemanth</option>
 		<option value="Ion">Ion</option>
 		<option value="Kalees">Kalees</option>
 		<option value="Kasi">Kasi</option>
-        <option value="Loki">Loki</option>
-		<option value="Lord">Lord</option>
+        	<option value="Loki">Loki</option>
 		<option value="Simeon">Simeon</option>
-        <option value="Sreejith">Sreejith</option>
-        <option value="Yashasvi">Yashasvi</option>
+        	<option value="Sreejith">Sreejith</option>
+        	<option value="Sumit">Sumit</option>
+		<option value="Yashasvi">Yashasvi</option>
             </select>
             <input type="text" id="playerName" placeholder="Enter player name" maxlength="18" />
             <button class="add-btn" id="addPlayerBtn">Add</button>
@@ -795,1295 +841,727 @@ startBtn.disabled = true;
 </script>
     </div>
 
-    <!-- Game 2: Dart Count-Up Game -->
+    
+        <!-- Game 2: Dart Count-Up Game (REPLACED: tournament-enabled implementation) -->
     <div id="game2" class="hidden">
         <div class="back-button-container">
             <button class="back-button" onclick="showGameSelector()">← Back to Games</button>
         </div>
-<div class="container">
-    <div class="title">🎯 Dart Count-Up</div>
-    <div class="setup" id="setup">
-        <div class="player-input-row">
-  <select id="predefinedPlayerSelect">
-        <option value="">Select player...</option>
-        <option value="Amit">Amit</option>
-		<option value="Anjali">Anjali</option>
-		<option value="Ankit">Ankit</option>
-		<option value="D">D</option>
-		<option value="DSP">DSP</option>
-		<option value="Gayathri">Gayathri</option>
-        <option value="Hemanth">Hemanth</option>
-		<option value="Ion">Ion</option>
-		<option value="Kalees">Kalees</option>
-		<option value="Kasi">Kasi</option>
-        <option value="Loki">Loki</option>
-		<option value="Lord">Lord</option>
-		<option value="Simeon">Simeon</option>
-        <option value="Sreejith">Sreejith</option>
-        <option value="Yashasvi">Yashasvi</option>
-        <!-- Add more regulars here if you want -->
-    </select>
-  <input type="text" id="playerName" placeholder="Enter player name" maxlength="18" />
-  <button class="add-btn" id="addPlayerBtn">Add</button>
+
+        <div class="container">
+            <div class="title">🎯 Dart Count-Up</div>
+
+            <!-- COUNT-UP CONTENT: setup area -->
+            <div class="setup" id="setup">
+                <div class="player-input-row">
+                    <select id="predefinedPlayerSelect">
+                        <option value="">Select player...</option>
+                        <option value="Amit">Amit</option>
+                        <option value="Anjali">Anjali</option>
+                        <option value="Ankit">Ankit</option>
+                        <option value="D">D</option>
+                        <option value="DSP">DSP</option>
+                        <option value="Gayathri">Gayathri</option>
+                        <option value="Hemanth">Hemanth</option>
+                        <option value="Ion">Ion</option>
+                        <option value="Kalees">Kalees</option>
+                        <option value="Kasi">Kasi</option>
+                        <option value="Loki">Loki</option>
+                        <option value="Simeon">Simeon</option>
+                        <option value="Sreejith">Sreejith</option>
+                        <option value="Sumit">Sumit</option>
+                        <option value="Yashasvi">Yashasvi</option>
+                    </select>
+                    <input type="text" id="playerName" placeholder="Enter player name" maxlength="18" />
+                    <button class="add-btn" id="addPlayerBtn">Add</button>
+                </div>
+
+                <div class="players-list" id="playersList"></div>
+
+                <div class="tournament-panel">
+                    <label style="font-weight:bold; color:#00ffff;">Tournament:</label>
+                    <input type="checkbox" id="tournamentToggle" />
+                    <label style="font-size:0.9rem;">Matches:</label>
+                    <input type="number" id="numMatches" value="3" min="1" style="width:80px;" />
+                    <button class="start-btn" id="startBtn" disabled>Start Game</button>
+                </div>
+                <div id="tournamentInfo" style="font-size:0.9rem; color:#ffd700; display:none; margin-top:6px;"></div>
+            </div>
+
+            <!-- in-game area -->
+            <div id="game" style="display:none; flex-direction:column; height:100%;">
+                <div class="fixed-top">
+                    <div style="padding: 0 18px;">
+                        <div class="round-bar">
+                            <div class="round-bar-inner" id="roundBarInner"></div>
+                            <div class="round-label" id="roundLabel"></div>
+                        </div>
+                    </div>
+                    <div class="players-scroll" id="playersScroll"></div>
+                    <div class="turn-info" id="turnInfo"></div>
+
+                    <!-- tournament leaderboard in-game (compact + expandable) -->
+<div id="tournamentLeaderboardInGame" style="display:none; padding: 10px 18px;">
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+    <div style="font-weight:bold; color:#00ffff; font-size:0.95rem;">Tournament Standings</div>
+    <div class="tournament-compact-header">
+      <button id="tournamentToggleBtn" class="toggle-btn">Show ▾</button>
+    </div>
+  </div>
+  <div id="tournamentMiniSummary" class="tournament-mini" style="margin-bottom:6px;"></div>
+  <div id="tournamentLeaderboardInGameList" class="tournament-leaderboard" style="display:block;"></div>
 </div>
 
-        <div class="players-list" id="playersList"></div>
-        <button class="start-btn" id="startBtn" disabled>Start Game</button>
-    </div>
-    <div id="game" style="display:none; flex-direction:column; height:100%;">
-        <div class="fixed-top">
-            <div style="padding: 0 18px;">
-                <div class="round-bar">
-                    <div class="round-bar-inner" id="roundBarInner"></div>
-                    <div class="round-label" id="roundLabel"></div>
+                </div>
+
+                <div class="score-section" id="scoreSection">
+                    <div id="scoreGrid"></div>
+                </div>
+                <div class="actions">
+                    <button class="action-btn undo" id="undoBtn" disabled>Undo</button>
+                    <button class="action-btn" id="nextBtn" disabled>Next Player</button>
+                    <button class="action-btn end" id="endBtn">End Game</button>
                 </div>
             </div>
-            <div class="players-scroll" id="playersScroll"></div>
-            <div class="turn-info" id="turnInfo"></div>
+
+            <!-- Winner / match end area -->
+            <div class="winner" id="winner">
+                <div class="winner-banner" id="winnerBanner"></div>
+                <div class="final-scores" id="finalScores"></div>
+
+                <div id="matchControls" style="width:100%; display:flex; gap:8px;">
+                    <button class="new-game-btn" id="newGameBtn">New Game</button>
+                    <button class="new-game-btn" id="nextMatchBtn" style="display:none;">Next Match</button>
+                </div>
+
+                <div id="tournamentLeaderboardContainer" style="width:100%; display:none;">
+                    <div style="font-weight:bold; color:#00ffff; margin-top:8px;">Tournament Leaderboard</div>
+                    <div class="tournament-leaderboard" id="tournamentLeaderboard"></div>
+                </div>
+            </div>
         </div>
-        <div class="score-section" id="scoreSection">
-            <div id="scoreGrid"></div>
-        </div>
-        <div class="actions">
-            <button class="action-btn undo" id="undoBtn" disabled>Undo</button>
-            <button class="action-btn" id="nextBtn" disabled>Next Player</button>
-            <button class="action-btn end" id="endBtn">End Game</button>
-        </div>
-    </div>
-    <div class="winner" id="winner">
-        <div class="winner-banner" id="winnerBanner"></div>
-        <div class="final-scores" id="finalScores"></div>
-        <button class="new-game-btn" id="newGameBtn">New Game</button>
-    </div>
-</div>
-<script>
-const LOCAL_STORAGE_KEY = 'dartCountUpGameV7';
 
-function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
+        <!-- Count-Up JS scoped to game2 -->
+        <script>
+            (function(){
+                // --- Game Logic for Dart Count-Up with Tournament (scoped to game2) ---
+                const LOCAL_STORAGE_KEY = 'dartCountUpGameV7_tournament_game2';
+                function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
+                let players = [], scores = {}, round = 1, currentPlayerIdx = 0, throws = [];
+                const maxRounds = 8, throwsPerTurn = 3;
+                let roundScores = {}, dartsThrown = {}, undoStack = [];
 
-let players = [], scores = {}, round = 1, currentPlayerIdx = 0, throws = [];
-const maxRounds = 8, throwsPerTurn = 3;
-let roundScores = {}, dartsThrown = {}, undoStack = [];
+                // Tournament state
+                let tournamentMode = false;
+                let tournamentTotalMatches = 1;
+                let tournamentCurrentMatch = 0;
+                let tournamentScores = {}; // cumulative: lower is better (position points)
+                let tournamentHistory = []; // array of per-match ordered player arrays (winner-first)
 
-const setupDiv = document.getElementById('setup');
-const playerNameInput = document.getElementById('playerName');
-const addPlayerBtn = document.getElementById('addPlayerBtn');
-const playersListDiv = document.getElementById('playersList');
-const startBtn = document.getElementById('startBtn');
-const gameDiv = document.getElementById('game');
-const roundBarInner = document.getElementById('roundBarInner');
-const roundLabel = document.getElementById('roundLabel');
-const playersScroll = document.getElementById('playersScroll');
-const turnInfo = document.getElementById('turnInfo');
-const scoreGridDiv = document.getElementById('scoreGrid');
-const undoBtn = document.getElementById('undoBtn');
-const nextBtn = document.getElementById('nextBtn');
-const endBtn = document.getElementById('endBtn');
-const winnerDiv = document.getElementById('winner');
-const winnerBanner = document.getElementById('winnerBanner');
-const finalScoresDiv = document.getElementById('finalScores');
-const newGameBtn = document.getElementById('newGameBtn');
+                // get elements scoped inside #game2
+                const container = document.getElementById('game2');
+                const qs = (sel) => container.querySelector(sel);
 
-const predefinedPlayerSelect = document.getElementById('predefinedPlayerSelect');
+                const setupDiv = qs('#setup');
+                const playerNameInput = qs('#playerName');
+                const addPlayerBtn = qs('#addPlayerBtn');
+                const playersListDiv = qs('#playersList');
+                const startBtn = qs('#startBtn');
+                const gameDiv = qs('#game');
+                const roundBarInner = qs('#roundBarInner');
+                const roundLabel = qs('#roundLabel');
+                const playersScroll = qs('#playersScroll');
+                const turnInfo = qs('#turnInfo');
+                const scoreGridDiv = qs('#scoreGrid');
+                const undoBtn = qs('#undoBtn');
+                const nextBtn = qs('#nextBtn');
+                const endBtn = qs('#endBtn');
+                const winnerDiv = qs('#winner');
+                const winnerBanner = qs('#winnerBanner');
+                const finalScoresDiv = qs('#finalScores');
+                const newGameBtn = qs('#newGameBtn');
+                const nextMatchBtn = qs('#nextMatchBtn');
+                const predefinedPlayerSelect = qs('#predefinedPlayerSelect');
+                const tournamentToggle = qs('#tournamentToggle');
+                const numMatchesInput = qs('#numMatches');
+                const tournamentInfo = qs('#tournamentInfo');
+                const tournamentLeaderboardContainer = qs('#tournamentLeaderboardContainer');
+                const tournamentLeaderboard = qs('#tournamentLeaderboard');
 
-predefinedPlayerSelect.onchange = function() {
-    if (this.value) {
-        playerNameInput.value = this.value;
-        addPlayerBtn.click();
-        this.selectedIndex = 0; // Reset dropdown
-    }
-};
+                // in-game leaderboard elements
+                const tournamentLeaderboardInGame = qs('#tournamentLeaderboardInGame');
+                const tournamentLeaderboardInGameList = qs('#tournamentLeaderboardInGameList');
 
-// === Persistence ===
-function saveGameState() {
-    const state = {
-        players, scores, round, currentPlayerIdx, throws, roundScores, dartsThrown, undoStack
-    };
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
-}
-function loadGameState() {
-    const stateStr = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (!stateStr) return false;
-    try {
-        const state = JSON.parse(stateStr);
-        players = state.players || [];
-        scores = state.scores || {};
-        round = state.round || 1;
-        currentPlayerIdx = state.currentPlayerIdx || 0;
-        throws = state.throws || [];
-        roundScores = state.roundScores || {};
-        dartsThrown = state.dartsThrown || {};
-        undoStack = state.undoStack || [];
-        return true;
-    } catch { return false; }
-}
-
-function pushUndoState() {
-    undoStack.push({
-        players: deepClone(players),
-        scores: deepClone(scores),
-        round,
-        currentPlayerIdx,
-        throws: deepClone(throws),
-        roundScores: deepClone(roundScores),
-        dartsThrown: deepClone(dartsThrown)
-    });
-    if (undoStack.length > 200) undoStack.shift();
-    saveGameState();
-}
-
-addPlayerBtn.onclick = () => {
-    const name = playerNameInput.value.trim();
-    if (!name) return;
-    if (players.includes(name)) {
-        alert('Player already added!');
-        playerNameInput.value = '';
-        return;
-    }
-    players.push(name);
-    scores[name] = 0;
-    roundScores[name] = {};
-    dartsThrown[name] = 0;
-    playerNameInput.value = '';
-    updatePlayersList();
-    startBtn.disabled = players.length < 1;
-    saveGameState();
-};
-playerNameInput.addEventListener('keypress', e => { if (e.key === 'Enter') addPlayerBtn.click(); });
-function updatePlayersList() {
-    playersListDiv.innerHTML = '';
-    players.forEach(name => {
-        const chip = document.createElement('span');
-        chip.className = 'player-chip';
-        chip.innerHTML = `🎯 ${name} <button class="remove-btn" title="Remove" onclick="removePlayer('${name}')">&times;</button>`;
-        playersListDiv.appendChild(chip);
-    });
-}
-window.removePlayer = function(name) {
-    players = players.filter(p => p !== name);
-    delete scores[name];
-    delete roundScores[name];
-    delete dartsThrown[name];
-    playerNameInput.value = '';
-    updatePlayersList();
-    startBtn.disabled = players.length < 1;
-    saveGameState();
-};
-startBtn.onclick = () => {
-    if (players.length === 0) return;
-    setupDiv.style.display = 'none';
-    gameDiv.style.display = 'flex';
-    winnerDiv.style.display = 'none';
-    round = 1;
-    currentPlayerIdx = 0;
-    throws = [];
-    players.forEach(p => {
-        scores[p] = 0;
-        roundScores[p] = {};
-        dartsThrown[p] = 0;
-    });
-    undoStack = [];
-    updateGameUI();
-    saveGameState();
-};
-
-function updateGameUI() {
-    roundBarInner.style.width = ((round-1)/maxRounds*100) + '%';
-    roundLabel.textContent = `Round ${round} of ${maxRounds}`;
-    playersScroll.innerHTML = '';
-    let maxScore = Math.max(...players.map(p => scores[p]));
-    let leaderNames = players.filter(p => scores[p] === maxScore);
-    players.forEach((name, idx) => {
-        const card = document.createElement('div');
-        card.className = 'player-card' + (idx === currentPlayerIdx ? ' active' : '');
-        let darts = dartsThrown[name] || 0;
-        let ppd = darts ? (scores[name]/darts).toFixed(2) : '0.00';
-        let statText = '';
-        if (scores[name] === maxScore && leaderNames.length === 1) {
-            statText = 'Leader';
-        } else if (scores[name] === maxScore && leaderNames.length > 1) {
-            statText = 'Tied';
-        } else {
-            statText = `Behind by ${maxScore - scores[name]}`;
-        }
-        card.innerHTML = `
-          <div class="avatar">${name[0].toUpperCase()}</div>
-          <div class="player-name">${name}</div>
-          <div class="player-score">${scores[name]}</div>
-          <div class="player-stats">PPD: ${ppd} | ${statText}</div>
-          <div class="player-turn-scores" id="turnScores_${name}"></div>
-        `;
-        playersScroll.appendChild(card);
-        const tsDiv = card.querySelector('.player-turn-scores');
-        if (roundScores[name] && roundScores[name][round]) {
-            roundScores[name][round].forEach(sc => {
-                const badge = document.createElement('span');
-                badge.className = 'turn-score-badge';
-                badge.textContent = sc;
-                tsDiv.appendChild(badge);
-            });
-        } else if (idx === currentPlayerIdx) {
-            for (let i = 0; i < throwsPerTurn; ++i) {
-                const badge = document.createElement('span');
-                badge.className = 'turn-score-badge empty';
-                badge.textContent = '🎯';
-                if (throws[i] !== undefined) {
-                    badge.className = 'turn-score-badge';
-                    badge.textContent = throws[i];
-                }
-                tsDiv.appendChild(badge);
-            }
-        }
-    });
-    setTimeout(() => {
-        const act = playersScroll.querySelector('.player-card.active');
-        if (act) act.scrollIntoView({behavior: "smooth", inline: "center", block: "nearest"});
-    }, 50);
-    const name = players[currentPlayerIdx];
-    const ttotal = throws.reduce((a, b) => a + b, 0) || 0;
-    turnInfo.textContent = `${name}'s Turn — Total: ${ttotal}`;
-    if (!roundScores[name] || !roundScores[name][round] || throws.length < throwsPerTurn) {
-        buildScoreGrid();
-    } else {
-        scoreGridDiv.innerHTML = '';
-    }
-    undoBtn.disabled = undoStack.length === 0;
-    nextBtn.disabled = throws.length !== throwsPerTurn;
-    saveGameState();
-}
-
-function addThrow(score) {
-    if (throws.length >= throwsPerTurn) return;
-    pushUndoState();
-    throws.push(score);
-    const name = players[currentPlayerIdx];
-    dartsThrown[name] = (dartsThrown[name] || 0) + 1;
-    if (score === 50) {
-        const bullBtn = document.querySelector('.score-btn.bull');
-        if (bullBtn) {
-            bullBtn.classList.add('bullseye-anim');
-            setTimeout(() => bullBtn.classList.remove('bullseye-anim'), 500);
-        }
-    }
-    updateGameUI();
-}
-
-undoBtn.onclick = () => {
-    if (undoStack.length === 0) return;
-    const prev = undoStack.pop();
-    players = deepClone(prev.players);
-    scores = deepClone(prev.scores);
-    round = prev.round;
-    currentPlayerIdx = prev.currentPlayerIdx;
-    throws = deepClone(prev.throws);
-    roundScores = deepClone(prev.roundScores);
-    dartsThrown = deepClone(prev.dartsThrown);
-    updateGameUI();
-};
-
-nextBtn.onclick = () => {
-    if (throws.length !== throwsPerTurn) return;
-    pushUndoState();
-    const name = players[currentPlayerIdx];
-    scores[name] += throws.reduce((a, b) => a + b, 0);
-    roundScores[name][round] = [...throws];
-    throws = [];
-    if (currentPlayerIdx < players.length - 1) {
-        currentPlayerIdx++;
-    } else {
-        currentPlayerIdx = 0;
-        round++;
-        if (round > maxRounds) {
-            showWinner();
-            saveGameState();
-            return;
-        }
-    }
-    updateGameUI();
-};
-
-endBtn.onclick = () => {
-    if (confirm("Are you sure you want to finish the game?")) {
-        showWinner();
-        saveGameState();
-    }
-};
-
-function buildScoreGrid() {
-    scoreGridDiv.className = 'score-grid';
-    scoreGridDiv.innerHTML = '';
-    scoreGridDiv.appendChild(makeScoreBtn('MISS', 0, 'miss'));
-    scoreGridDiv.appendChild(makeScoreBtn('Bull', 25, 'bull25', '25'));
-    scoreGridDiv.appendChild(makeScoreBtn('Bull', 50, 'bull', '50'));
-    for (let i=1; i<=20; i++) scoreGridDiv.appendChild(makeScoreBtn(i, i, 'single', 'S'));
-    for (let i=1; i<=20; i++) scoreGridDiv.appendChild(makeScoreBtn(i, i*2, 'double', 'D'));
-    for (let i=1; i<=20; i++) scoreGridDiv.appendChild(makeScoreBtn(i, i*3, 'triple', 'T'));
-}
-function makeScoreBtn(label, value, type, dots='') {
-    const btn = document.createElement('button');
-    btn.className = `score-btn ${type}`;
-    btn.innerHTML = `<span>${label}</span>${dots?'<span class="dots">'+dots+'</span>':''}`;
-    btn.onclick = () => addThrow(value);
-    return btn;
-}
-
-// --- Google Sheets Integration ---
-function sendGameDataToGoogleSheet() {
-    const now = new Date();
-    const data = {
-        date: now.toLocaleDateString(),
-        time: now.toLocaleTimeString(),
-        playerNames: players,
-        scores: scores,
-        statistics: {
-            ppd: players.map(name => dartsThrown[name] ? (scores[name]/dartsThrown[name]).toFixed(2) : '0.00'),
-            dartsThrown: dartsThrown,
-            roundScores: roundScores
-        }
-    };
-    fetch('https://script.google.com/macros/s/AKfycbxhisLlKlXWYvXatWgokrJ3hAbIbzraqb9ZD5B3V4FVRM4yzKN6Af9LgrdiZ-IjClgy/exec', { // <-- Replace with your Google Apps Script Web App URL
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    });
-}
-
-
-function showWinner() {
-    gameDiv.style.display = 'none';
-    winnerDiv.style.display = 'flex';
-    let max = Math.max(...players.map(p=>scores[p]));
-    let winners = players.filter(p=>scores[p]===max);
-    winnerBanner.innerHTML = winners.length>1
-        ? `🏆 Tie! ${winners.join(' & ')}`
-        : `🏆 Winner: ${winners[0]}`;
-    confetti({
-        particleCount: 200,
-        spread: 100,
-        origin: { y: 0.6 }
-    });
-    finalScoresDiv.innerHTML = '';
-    let sorted = players.slice().sort((a,b)=>scores[b]-scores[a]);
-    sorted.forEach((name, idx) => {
-        let medal = idx===0 ? '🥇' : idx===1 ? '🥈' : idx===2 ? '🥉' : '';
-        let darts = dartsThrown[name] || 0;
-        let ppd = darts ? (scores[name]/darts).toFixed(2) : '0.00';
-        let maxScore = Math.max(...players.map(p=>scores[p]));
-        let statText = '';
-        if (scores[name] === maxScore && sorted.filter(p=>scores[p]===maxScore).length === 1) {
-            statText = 'Leader';
-        } else if (scores[name] === maxScore) {
-            statText = 'Tied';
-        } else {
-            statText = `Behind by ${maxScore - scores[name]}`;
-        }
-        finalScoresDiv.innerHTML += `
-        <div class="final-score-row">
-            <div>${medal} ${name}</div>
-            <div class="stat-label">Score</div>
-            <div class="stat-value">${scores[name]}</div>
-            <div class="stat-label">PPD</div>
-            <div class="stat-value">${ppd}</div>
-            <div class="stat-label">Darts</div>
-            <div class="stat-value">${darts}</div>
-            <div class="stat-label">${statText}</div>
-        </div>`;
-    });
-    saveGameState();
-	sendGameDataToGoogleSheet(); // <-- Send data to Google Sheet after game ends
-}
-newGameBtn.onclick = () => {
-    localStorage.removeItem(LOCAL_STORAGE_KEY);
-    players = [];
-    scores = {};
-    round = 1;
-    currentPlayerIdx = 0;
-    throws = [];
-    roundScores = {};
-    dartsThrown = {};
-    undoStack = [];
-    setupDiv.style.display = 'flex';
-    gameDiv.style.display = 'none';
-    winnerDiv.style.display = 'none';
-    updatePlayersList();
-    startBtn.disabled = true;
-    playerNameInput.value = '';
-    saveGameState();
-};
-
-function initialize() {
-    if (loadGameState()) {
-        if (players.length && round <= maxRounds) {
-            setupDiv.style.display = 'none';
-            gameDiv.style.display = 'flex';
-            winnerDiv.style.display = 'none';
-            updateGameUI();
-        } else if (round > maxRounds && players.length) {
-            setupDiv.style.display = 'none';
-            gameDiv.style.display = 'none';
-            winnerDiv.style.display = 'flex';
-            showWinner();
-        } else {
-            setupDiv.style.display = 'flex';
-            gameDiv.style.display = 'none';
-            winnerDiv.style.display = 'none';
-            updatePlayersList();
-            startBtn.disabled = players.length === 0;
-        }
-    } else {
-        updatePlayersList();
-        startBtn.disabled = true;
-        setupDiv.style.display = 'flex';
-        gameDiv.style.display = 'none';
-        winnerDiv.style.display = 'none';
-    }
-}
-initialize();
-</script>
-    </div>
-
-    <script>
-        // Global variables to track current game state
-        let currentGame = null;
-        let game1Initialized = false;
-        let game2Initialized = false;
-
-        // Game Selection and Navigation Functions
-        function selectGame(gameId) {
-            // Hide game selector
-            document.getElementById('gameSelector').style.display = 'none';
-
-            // Show selected game
-            const gameElement = document.getElementById(gameId);
-            gameElement.style.display = 'block';
-            gameElement.classList.remove('hidden');
-
-            currentGame = gameId;
-
-            // Initialize the selected game if not already initialized
-            if (gameId === 'game1' && !game1Initialized) {
-                initGame1();
-                game1Initialized = true;
-            } else if (gameId === 'game2' && !game2Initialized) {
-                initGame2();
-                game2Initialized = true;
-            }
-        }
-
-        function showGameSelector() {
-            // Hide all games
-            document.getElementById('game1').style.display = 'none';
-            document.getElementById('game1').classList.add('hidden');
-            document.getElementById('game2').style.display = 'none';
-            document.getElementById('game2').classList.add('hidden');
-
-            // Show game selector
-            document.getElementById('gameSelector').style.display = 'flex';
-
-            currentGame = null;
-        }
-
-        // Game 1 JavaScript (Classic 01) 
-        function initGame1() {
-            // Set context to game1 container for DOM queries
-            const gameContext = document.getElementById('game1');
-
-            // Override document.getElementById to scope to game1 container
-            const originalGetElementById = document.getElementById;
-            document.getElementById = function(id) {
-                const element = gameContext.querySelector('#' + id);
-                return element || originalGetElementById.call(document, id);
-            };
-
-            try {
-                // Execute Game 1 JavaScript with 5-column layout
-                // --- UTILITIES ---
-function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
-
-// --- STATE MANAGEMENT ---
-let players = [], scores = {}, currentPlayerIdx = 0, throws = [];
-let roundScores = {}, dartsThrown = {}, undoStack = [];
-let startingScore = 501, inRule = 'straight', outRule = 'double';
-let playerHasOpened = {}, winnerFound = false, currentTurnStartScore = 0;
-const throwsPerTurn = 3;
-
-// --- DOM ELEMENTS ---
-const setupDiv = document.getElementById('setup');
-const playerNameInput = document.getElementById('playerName');
-const addPlayerBtn = document.getElementById('addPlayerBtn');
-const playersListDiv = document.getElementById('playersList');
-const startBtn = document.getElementById('startBtn');
-const predefinedPlayerSelect = document.getElementById('predefinedPlayerSelect');
-const gameDiv = document.getElementById('game');
-const roundBarInner = document.getElementById('roundBarInner');
-const roundLabel = document.getElementById('roundLabel');
-const playersScroll = document.getElementById('playersScroll');
-const turnInfo = document.getElementById('turnInfo');
-const scoreGridDiv = document.getElementById('scoreGrid');
-const undoBtn = document.getElementById('undoBtn');
-const nextBtn = document.getElementById('nextBtn');
-const endBtn = document.getElementById('endBtn');
-const winnerDiv = document.getElementById('winner');
-const winnerBanner = document.getElementById('winnerBanner');
-const finalScoresDiv = document.getElementById('finalScores');
-const newGameBtn = document.getElementById('newGameBtn');
-const gameType = document.getElementById('gameType');
-const inType = document.getElementById('inType');
-const outType = document.getElementById('outType');
-
-// --- SETUP PHASE ---
-predefinedPlayerSelect.onchange = function() {
-    if (this.value) {
-        playerNameInput.value = this.value;
-        addPlayerBtn.click();
-        this.value = ''; // Reset dropdown after adding
-    }
-};
-
-addPlayerBtn.onclick = () => {
-    const name = playerNameInput.value.trim();
-    if (!name || players.includes(name)) {
-        playerNameInput.value = '';
-        return;
-    }
-    players.push(name);
-    playerNameInput.value = '';
-    updatePlayersList();
-    startBtn.disabled = players.length < 1;
-};
-playerNameInput.addEventListener('keypress', e => { if (e.key === 'Enter') addPlayerBtn.click(); });
-
-function updatePlayersList() {
-    playersListDiv.innerHTML = '';
-    players.forEach(name => {
-        const chip = document.createElement('span');
-        chip.className = 'player-chip';
-        chip.innerHTML = `🎯 ${name} <button class="remove-btn" title="Remove" onclick="removePlayer('${name}')">×</button>`;
-        playersListDiv.appendChild(chip);
-    });
-}
-window.removePlayer = (name) => {
-    players = players.filter(p => p !== name);
-    updatePlayersList();
-    startBtn.disabled = players.length < 1;
-};
-
-// --- GAME LIFECYCLE ---
-startBtn.onclick = () => {
-    if (players.length === 0) return;
-    // 1. Initialize game state from selections
-    startingScore = parseInt(gameType.value, 10);
-    inRule = inType.value;
-    outRule = outType.value;
-    currentPlayerIdx = 0;
-    throws = [];
-    winnerFound = false;
-    undoStack = [];
-    playerHasOpened = {};
-    roundScores = {};
-    dartsThrown = {};
-
-    // 2. Set up each player
-    players.forEach(p => {
-        scores[p] = startingScore;
-        roundScores[p] = [];
-        dartsThrown[p] = 0;
-        playerHasOpened[p] = (inRule === 'straight');
-    });
-
-    // 3. Transition UI and start the first turn
-    setupDiv.style.display = 'none';
-    winnerDiv.style.display = 'none';
-    gameDiv.style.display = 'flex';
-    startTurn();
-};
-
-function startTurn() {
-    const name = players[currentPlayerIdx];
-    currentTurnStartScore = scores[name]; // Store score for bust logic
-    throws = [];
-    updateGameUI();
-}
-
-function nextPlayer() {
-    if (winnerFound) return;
-    const name = players[currentPlayerIdx];
-    if (!roundScores[name]) roundScores[name] = [];
-    roundScores[name].push(deepClone(throws)); // Log the completed turn
-    
-    currentPlayerIdx = (currentPlayerIdx + 1) % players.length;
-    startTurn();
-}
-
-endBtn.onclick = () => {
-    if (confirm("Are you sure you want to end the game? This action cannot be undone.")) {
-        winnerFound = true;
-        showWinner();
-    }
-};
-
-newGameBtn.onclick = () => {
-    setupDiv.style.display = 'flex';
-    gameDiv.style.display = 'none';
-    winnerDiv.style.display = 'none';
-    players = [];
-    updatePlayersList();
-    startBtn.disabled = true;
-    playerNameInput.value = '';
-};
-
-// --- CORE GAME LOGIC ---
-function addThrow(score, type) {
-    if (throws.length >= throwsPerTurn || winnerFound) return;
-
-    pushUndoState(); 
-
-    const name = players[currentPlayerIdx];
-    const isCurrentlyOpen = playerHasOpened[name];
-    let isScoringThrow = isCurrentlyOpen;
-    
-    dartsThrown[name]++;
-    const thisThrow = { score, type, valid: false };
-    throws.push(thisThrow);
-
-    // 1. "IN" RULE LOGIC
-    if (!isCurrentlyOpen) {
-        const meetsInRule = (inRule === 'double' && type === 'double') ||
-                            (inRule === 'triple' && type === 'triple') ||
-                            (inRule === 'master' && (type === 'double' || type === 'triple'));
-        if (meetsInRule) {
-            playerHasOpened[name] = true;
-            isScoringThrow = true;
-        }
-    }
-
-    // 2. SCORING AND "OUT" / BUST LOGIC
-    if (isScoringThrow) {
-        const newScore = scores[name] - score;
-        let isBust = false;
-
-        if (newScore === 0) { // Potential WIN, but requires validation
-            const meetsOutRule = (outRule === 'straight') ||
-                                 (outRule === 'double' && type === 'double') ||
-                                 (outRule === 'triple' && type === 'triple') ||
-                                 (outRule === 'master' && (type === 'double' || type === 'triple'));
-            if (!meetsOutRule) {
-                isBust = true;
-            } else {
-                // Valid win, ask for confirmation
-                scores[name] = newScore;
-                updateGameUI(); // Update UI to show 0 before confirming
-                setTimeout(() => { // Timeout to allow UI to update
-                    if (confirm(`🏆 ${name} has won! End the game?`)) {
-                        winnerFound = true;
-                        showWinner();
-                    } else {
-                        // User cancelled, so undo the last (winning) throw
-                        undoBtn.click(); 
+                predefinedPlayerSelect.onchange = function() {
+                    if (this.value) {
+                        playerNameInput.value = this.value;
+                        addPlayerBtn.click();
+                        this.selectedIndex = 0;
                     }
-                }, 100);
-                return; // Stop further processing for this throw
-            }
-        } else if (newScore < 0 || (newScore === 1 && outRule !== 'straight')) {
-            isBust = true;
-        }
+                };
 
-        if (isBust) {
-            scores[name] = currentTurnStartScore;
-            showInvalidThrowAnimation(name);
-            while (throws.length < throwsPerTurn) throws.push({ score: 'B', type: 'bust', valid: false });
-        } else {
-            thisThrow.valid = true;
-            scores[name] = newScore;
-        }
-    } else {
-        // FAILED "IN" RULE
-        showInvalidThrowAnimation(name);
-    }
-    
-    updateGameUI();
-}
-
-
-// --- UNDO LOGIC ---
-function pushUndoState() {
-    undoStack.push({
-        scores: deepClone(scores),
-        currentPlayerIdx,
-        throws: deepClone(throws),
-        roundScores: deepClone(roundScores),
-        dartsThrown: deepClone(dartsThrown),
-        playerHasOpened: deepClone(playerHasOpened),
-        winnerFound,
-        currentTurnStartScore
-    });
-    if (undoStack.length > 50) undoStack.shift();
-}
-
-undoBtn.onclick = () => {
-    if (undoStack.length === 0) return;
-    const prevState = undoStack.pop();
-    scores = prevState.scores;
-    currentPlayerIdx = prevState.currentPlayerIdx;
-    throws = prevState.throws;
-    roundScores = prevState.roundScores;
-    dartsThrown = prevState.dartsThrown;
-    playerHasOpened = prevState.playerHasOpened;
-    winnerFound = prevState.winnerFound;
-    currentTurnStartScore = prevState.currentTurnStartScore;
-    updateGameUI();
-};
-
-// --- UI AND ANIMATIONS ---
-function showInvalidThrowAnimation(playerName) {
-    const card = Array.from(document.querySelectorAll('.player-card')).find(c => c.querySelector('.player-name').textContent === playerName);
-    if (card) {
-        card.classList.add('shake-animation');
-        setTimeout(() => card.classList.remove('shake-animation'), 600);
-    }
-}
-
-function updateGameUI() {
-    const name = players[currentPlayerIdx];
-    
-    const progress = Math.max(0, (startingScore - (scores[name] || startingScore)) / startingScore * 100);
-    roundBarInner.style.width = `${progress}%`;
-    roundLabel.textContent = `Target: ${startingScore}`;
-
-    playersScroll.innerHTML = '';
-    const minScore = Math.min(...players.map(p => scores[p] > 0 ? scores[p] : Infinity));
-    players.forEach((pName, idx) => {
-        const card = document.createElement('div');
-        card.className = 'player-card' + (idx === currentPlayerIdx ? ' active' : '');
-        const darts = dartsThrown[pName] || 0;
-        const ppd = darts ? ((startingScore - scores[pName]) / darts).toFixed(2) : '0.00';
-        
-        let statText = 'Winner!';
-        if (scores[pName] > 0) {
-            if (!playerHasOpened[pName]) {
-                statText = 'Waiting to Open';
-            } else if (scores[pName] === minScore) {
-                statText = 'Leader';
-            } else {
-                statText = `+${scores[pName] - minScore}`;
-            }
-        }
-        
-        card.innerHTML = `
-          <div class="avatar">${pName[0].toUpperCase()}</div>
-          <div class="player-name">${pName}</div>
-          <div class="player-score">${scores[pName]}</div>
-          <div class="player-stats">${statText} | PPD: ${ppd}</div>
-          <div class="player-turn-scores"></div>
-        `;
-        playersScroll.appendChild(card);
-        
-        const tsDiv = card.querySelector('.player-turn-scores');
-        const turnDisplay = (idx === currentPlayerIdx) ? throws : (roundScores[pName]?.slice(-1)[0] || []);
-        for (let i = 0; i < throwsPerTurn; i++) {
-            const badge = document.createElement('span');
-            badge.className = 'turn-score-badge empty';
-            badge.innerHTML = '&ndash;';
-            if (turnDisplay[i]) {
-                if (turnDisplay[i].valid) {
-                    badge.className = 'turn-score-badge';
-                    badge.textContent = turnDisplay[i].score;
-                } else {
-                    badge.className = 'turn-score-badge invalid';
-                    badge.textContent = '🥚'; // Display egg for invalid throws
+                function saveGameState() {
+                    const state = { players, scores, round, currentPlayerIdx, throws, roundScores, dartsThrown, undoStack,
+                        tournamentMode, tournamentTotalMatches, tournamentCurrentMatch, tournamentScores, tournamentHistory };
+                    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
                 }
-            }
-            tsDiv.appendChild(badge);
-        }
-    });
-
-    const activeCard = playersScroll.querySelector('.player-card.active');
-    if (activeCard) activeCard.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-
-    const turnTotal = throws.filter(t => t.valid).reduce((sum, t) => sum + t.score, 0);
-    turnInfo.textContent = `${name}'s Turn — Threw: ${turnTotal} | Remaining: ${scores[name]}`;
-
-    const turnOver = throws.length >= throwsPerTurn;
-    undoBtn.disabled = undoStack.length === 0;
-    nextBtn.disabled = !turnOver || winnerFound;
-    
-    scoreGridDiv.style.display = turnOver || winnerFound ? 'none' : 'grid';
-}
-
-function buildScoreGrid() {
-    scoreGridDiv.innerHTML = '';
-    const addBtn = (label, val, css, type, dots) => {
-        const btn = document.createElement('button');
-        btn.className = `score-btn ${css}`;
-        btn.innerHTML = `<span>${label}</span>${dots ? `<span class="dots">${dots}</span>` : ''}`;
-        btn.onclick = () => addThrow(val, type);
-        scoreGridDiv.appendChild(btn);
-    };
-    addBtn('MISS', 0, 'miss', 'single');
-    addBtn('Bull', 25, 'bull25', 'single', '25');
-    addBtn('Bull', 50, 'bull', 'double', 'D•50');
-    for (let i = 1; i <= 20; i++) addBtn(i, i, 'single', 'single', 'S');
-    for (let i = 1; i <= 20; i++) addBtn(i, i * 2, 'double', 'double', 'D');
-    for (let i = 1; i <= 20; i++) addBtn(i, i * 3, 'triple', 'triple', 'T');
-}
-
-function showWinner() {
-    gameDiv.style.display = 'none';
-    winnerDiv.style.display = 'flex';
-    
-    const winners = players.filter(p => scores[p] === 0);
-    winnerBanner.textContent = winners.length > 0 ? `🏆 Winner: ${winners.join(' & ')} 🏆` : "Game Over";
-    
-    confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
-    
-    finalScoresDiv.innerHTML = '';
-    const sortedPlayers = players.slice().sort((a, b) => scores[a] - scores[b]);
-    sortedPlayers.forEach((pName, idx) => {
-        const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '';
-        const darts = dartsThrown[pName] || 0;
-        const ppd = darts ? ((startingScore - scores[pName]) / darts).toFixed(2) : '0.00';
-        
-        const row = document.createElement('div');
-        row.className = 'final-score-row';
-        row.innerHTML = `
-            <div>${medal} ${pName}</div>
-            <div class="stat-label">Final Score</div>
-            <div class="stat-value">${scores[pName]}</div>
-            <div class="stat-label">PPD / Darts</div>
-            <div class="stat-value">${ppd} / ${darts}</div>
-        `;
-        finalScoresDiv.appendChild(row);
-    });
-}
-
-// --- INITIALIZATION ---
-nextBtn.onclick = nextPlayer;
-buildScoreGrid();
-updatePlayersList();
-startBtn.disabled = true;
-            } catch(error) {
-                console.error('Error initializing Game 1:', error);
-            } finally {
-                // Restore original getElementById
-                document.getElementById = originalGetElementById;
-            }
-        }
-
-        // Game 2 JavaScript (Count-Up)
-        function initGame2() {
-            // Set context to game2 container for DOM queries
-            const gameContext = document.getElementById('game2');
-
-            // Override document.getElementById to scope to game2 container
-            const originalGetElementById = document.getElementById;
-            document.getElementById = function(id) {
-                const element = gameContext.querySelector('#' + id);
-                return element || originalGetElementById.call(document, id);
-            };
-
-            try {
-                // Execute Game 2 JavaScript with 5-column layout
-                const LOCAL_STORAGE_KEY = 'dartCountUpGameV7';
-
-function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
-
-let players = [], scores = {}, round = 1, currentPlayerIdx = 0, throws = [];
-const maxRounds = 8, throwsPerTurn = 3;
-let roundScores = {}, dartsThrown = {}, undoStack = [];
-
-const setupDiv = document.getElementById('setup');
-const playerNameInput = document.getElementById('playerName');
-const addPlayerBtn = document.getElementById('addPlayerBtn');
-const playersListDiv = document.getElementById('playersList');
-const startBtn = document.getElementById('startBtn');
-const gameDiv = document.getElementById('game');
-const roundBarInner = document.getElementById('roundBarInner');
-const roundLabel = document.getElementById('roundLabel');
-const playersScroll = document.getElementById('playersScroll');
-const turnInfo = document.getElementById('turnInfo');
-const scoreGridDiv = document.getElementById('scoreGrid');
-const undoBtn = document.getElementById('undoBtn');
-const nextBtn = document.getElementById('nextBtn');
-const endBtn = document.getElementById('endBtn');
-const winnerDiv = document.getElementById('winner');
-const winnerBanner = document.getElementById('winnerBanner');
-const finalScoresDiv = document.getElementById('finalScores');
-const newGameBtn = document.getElementById('newGameBtn');
-
-const predefinedPlayerSelect = document.getElementById('predefinedPlayerSelect');
-
-predefinedPlayerSelect.onchange = function() {
-    if (this.value) {
-        playerNameInput.value = this.value;
-        addPlayerBtn.click();
-        this.selectedIndex = 0; // Reset dropdown
-    }
-};
-
-// === Persistence ===
-function saveGameState() {
-    const state = {
-        players, scores, round, currentPlayerIdx, throws, roundScores, dartsThrown, undoStack
-    };
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
-}
-function loadGameState() {
-    const stateStr = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (!stateStr) return false;
-    try {
-        const state = JSON.parse(stateStr);
-        players = state.players || [];
-        scores = state.scores || {};
-        round = state.round || 1;
-        currentPlayerIdx = state.currentPlayerIdx || 0;
-        throws = state.throws || [];
-        roundScores = state.roundScores || {};
-        dartsThrown = state.dartsThrown || {};
-        undoStack = state.undoStack || [];
-        return true;
-    } catch { return false; }
-}
-
-function pushUndoState() {
-    undoStack.push({
-        players: deepClone(players),
-        scores: deepClone(scores),
-        round,
-        currentPlayerIdx,
-        throws: deepClone(throws),
-        roundScores: deepClone(roundScores),
-        dartsThrown: deepClone(dartsThrown)
-    });
-    if (undoStack.length > 200) undoStack.shift();
-    saveGameState();
-}
-
-addPlayerBtn.onclick = () => {
-    const name = playerNameInput.value.trim();
-    if (!name) return;
-    if (players.includes(name)) {
-        alert('Player already added!');
-        playerNameInput.value = '';
-        return;
-    }
-    players.push(name);
-    scores[name] = 0;
-    roundScores[name] = {};
-    dartsThrown[name] = 0;
-    playerNameInput.value = '';
-    updatePlayersList();
-    startBtn.disabled = players.length < 1;
-    saveGameState();
-};
-playerNameInput.addEventListener('keypress', e => { if (e.key === 'Enter') addPlayerBtn.click(); });
-function updatePlayersList() {
-    playersListDiv.innerHTML = '';
-    players.forEach(name => {
-        const chip = document.createElement('span');
-        chip.className = 'player-chip';
-        chip.innerHTML = `🎯 ${name} <button class="remove-btn" title="Remove" onclick="removePlayer('${name}')">&times;</button>`;
-        playersListDiv.appendChild(chip);
-    });
-}
-window.removePlayer = function(name) {
-    players = players.filter(p => p !== name);
-    delete scores[name];
-    delete roundScores[name];
-    delete dartsThrown[name];
-    playerNameInput.value = '';
-    updatePlayersList();
-    startBtn.disabled = players.length < 1;
-    saveGameState();
-};
-startBtn.onclick = () => {
-    if (players.length === 0) return;
-    setupDiv.style.display = 'none';
-    gameDiv.style.display = 'flex';
-    winnerDiv.style.display = 'none';
-    round = 1;
-    currentPlayerIdx = 0;
-    throws = [];
-    players.forEach(p => {
-        scores[p] = 0;
-        roundScores[p] = {};
-        dartsThrown[p] = 0;
-    });
-    undoStack = [];
-    updateGameUI();
-    saveGameState();
-};
-
-function updateGameUI() {
-    roundBarInner.style.width = ((round-1)/maxRounds*100) + '%';
-    roundLabel.textContent = `Round ${round} of ${maxRounds}`;
-    playersScroll.innerHTML = '';
-    let maxScore = Math.max(...players.map(p => scores[p]));
-    let leaderNames = players.filter(p => scores[p] === maxScore);
-    players.forEach((name, idx) => {
-        const card = document.createElement('div');
-        card.className = 'player-card' + (idx === currentPlayerIdx ? ' active' : '');
-        let darts = dartsThrown[name] || 0;
-        let ppd = darts ? (scores[name]/darts).toFixed(2) : '0.00';
-        let statText = '';
-        if (scores[name] === maxScore && leaderNames.length === 1) {
-            statText = 'Leader';
-        } else if (scores[name] === maxScore && leaderNames.length > 1) {
-            statText = 'Tied';
-        } else {
-            statText = `Behind by ${maxScore - scores[name]}`;
-        }
-        card.innerHTML = `
-          <div class="avatar">${name[0].toUpperCase()}</div>
-          <div class="player-name">${name}</div>
-          <div class="player-score">${scores[name]}</div>
-          <div class="player-stats">PPD: ${ppd} | ${statText}</div>
-          <div class="player-turn-scores" id="turnScores_${name}"></div>
-        `;
-        playersScroll.appendChild(card);
-        const tsDiv = card.querySelector('.player-turn-scores');
-        if (roundScores[name] && roundScores[name][round]) {
-            roundScores[name][round].forEach(sc => {
-                const badge = document.createElement('span');
-                badge.className = 'turn-score-badge';
-                badge.textContent = sc;
-                tsDiv.appendChild(badge);
-            });
-        } else if (idx === currentPlayerIdx) {
-            for (let i = 0; i < throwsPerTurn; ++i) {
-                const badge = document.createElement('span');
-                badge.className = 'turn-score-badge empty';
-                badge.textContent = '🎯';
-                if (throws[i] !== undefined) {
-                    badge.className = 'turn-score-badge';
-                    badge.textContent = throws[i];
+                function loadGameState() {
+                    const stateStr = localStorage.getItem(LOCAL_STORAGE_KEY);
+                    if (!stateStr) return false;
+                    try {
+                        const state = JSON.parse(stateStr);
+                        players = state.players || [];
+                        scores = state.scores || {};
+                        round = state.round || 1;
+                        currentPlayerIdx = state.currentPlayerIdx || 0;
+                        throws = state.throws || [];
+                        roundScores = state.roundScores || {};
+                        dartsThrown = state.dartsThrown || {};
+                        undoStack = state.undoStack || [];
+                        tournamentMode = state.tournamentMode || false;
+                        tournamentTotalMatches = state.tournamentTotalMatches || 1;
+                        tournamentCurrentMatch = state.tournamentCurrentMatch || 0;
+                        tournamentScores = state.tournamentScores || {};
+                        tournamentHistory = state.tournamentHistory || [];
+                        return true;
+                    } catch { return false; }
                 }
-                tsDiv.appendChild(badge);
-            }
-        }
+                function pushUndoState() {
+                    undoStack.push({ players: deepClone(players), scores: deepClone(scores), round, currentPlayerIdx, throws: deepClone(throws), roundScores: deepClone(roundScores), dartsThrown: deepClone(dartsThrown) });
+                    if (undoStack.length > 200) undoStack.shift();
+                    saveGameState();
+                }
+
+                addPlayerBtn.onclick = () => {
+                    const name = playerNameInput.value.trim();
+                    if (!name) return;
+                    if (players.includes(name)) {
+                        alert('Player already added!');
+                        playerNameInput.value = '';
+                        return;
+                    }
+                    players.push(name); scores[name] = 0; roundScores[name] = {}; dartsThrown[name] = 0;
+                    playerNameInput.value = '';
+                    updatePlayersList();
+                    startBtn.disabled = players.length < 1;
+                    saveGameState();
+                };
+                playerNameInput.addEventListener('keypress', e => { if (e.key === 'Enter') addPlayerBtn.click(); });
+                function updatePlayersList() {
+                    playersListDiv.innerHTML = '';
+                    players.forEach(name => {
+                        const chip = document.createElement('span');
+                        chip.className = 'player-chip';
+                        chip.innerHTML = `🎯 ${name} <button class="remove-btn" title="Remove" data-name="${name}">&times;</button>`;
+                        playersListDiv.appendChild(chip);
+                    });
+                    // attach remove handlers
+                    playersListDiv.querySelectorAll('.remove-btn').forEach(btn=>{
+                        btn.addEventListener('click', (ev)=>{
+                            const name = ev.currentTarget.getAttribute('data-name');
+                            removePlayer(name);
+                        });
+                    });
+                }
+                function removePlayer(name) {
+                    players = players.filter(p => p !== name);
+                    delete scores[name]; delete roundScores[name]; delete dartsThrown[name];
+                    playerNameInput.value = '';
+                    updatePlayersList();
+                    startBtn.disabled = players.length < 1;
+                    saveGameState();
+                }
+
+                startBtn.onclick = () => {
+                    if (players.length === 0) return;
+                    tournamentMode = tournamentToggle.checked;
+                    tournamentTotalMatches = Math.max(1, parseInt(numMatchesInput.value) || 1);
+                    setupDiv.style.display = 'none';
+                    gameDiv.style.display = 'flex';
+                    winnerDiv.style.display = 'none';
+
+                    // initialize per-match state
+                    round = 1; currentPlayerIdx = 0; throws = [];
+                    players.forEach(p => { scores[p] = 0; roundScores[p] = {}; dartsThrown[p] = 0; });
+                    undoStack = [];
+
+                    if (tournamentMode) {
+                        // start a fresh tournament: set to match 1 and reset tournament totals
+                        tournamentCurrentMatch = 1;
+                        tournamentScores = {};
+                        players.forEach(p => tournamentScores[p] = 0);
+                        tournamentHistory = [];
+                        tournamentInfo.style.display = 'block';
+                        tournamentInfo.textContent = `Tournament: Match ${tournamentCurrentMatch} of ${tournamentTotalMatches}`;
+                        // show in-game leaderboard
+                        tournamentLeaderboardInGame.style.display = 'block';
+                        tournamentLeaderboardContainer.style.display = 'none';
+                        renderTournamentLeaderboard(); // initial (all zero)
+                    } else {
+                        tournamentInfo.style.display = 'none';
+                        tournamentLeaderboardInGame.style.display = 'none';
+                    }
+
+                    updatePlayersList(); // ensure display order matches players[]
+                    updateGameUI();
+                    saveGameState();
+                };
+
+                function updateGameUI() {
+                    roundBarInner.style.width = ((round-1)/maxRounds*100) + '%';
+                    roundLabel.textContent = `Round ${round} of ${maxRounds}`;
+                    playersScroll.innerHTML = '';
+                    let maxScore = players.length ? Math.max(...players.map(p => scores[p])) : 0;
+                    let leaderNames = players.filter(p => scores[p] === maxScore);
+                    players.forEach((name, idx) => {
+                        const card = document.createElement('div');
+                        card.className = 'player-card' + (idx === currentPlayerIdx ? ' active' : '');
+                        let darts = dartsThrown[name] || 0;
+                        let ppd = darts ? (scores[name]/darts).toFixed(2) : '0.00';
+                        let statText = '';
+                        if (scores[name] === maxScore && leaderNames.length === 1) statText = 'Leader';
+                        else if (scores[name] === maxScore && leaderNames.length > 1) statText = 'Tied';
+                        else statText = `Behind by ${maxScore - scores[name]}`;
+                        card.innerHTML = `<div class="avatar">${name[0].toUpperCase()}</div>
+                            <div class="player-name">${name}</div>
+                            <div class="player-score">${scores[name]}</div>
+                            <div class="player-stats">PPD: ${ppd} | ${statText}</div>
+                            <div class="player-turn-scores" id="turnScores_${name}"></div>`;
+                        playersScroll.appendChild(card);
+                        const tsDiv = card.querySelector('.player-turn-scores');
+                        if (roundScores[name] && roundScores[name][round]) {
+                            roundScores[name][round].forEach(sc => {
+                                const badge = document.createElement('span');
+                                badge.className = 'turn-score-badge';
+                                badge.textContent = sc; tsDiv.appendChild(badge);
+                            });
+                        } else if (idx === currentPlayerIdx) {
+                            for (let i = 0; i < throwsPerTurn; ++i) {
+                                const badge = document.createElement('span');
+                                badge.className = 'turn-score-badge empty';
+                                badge.textContent = '🎯';
+                                if (throws[i] !== undefined) {
+                                    badge.className = 'turn-score-badge';
+                                    badge.textContent = throws[i];
+                                }
+                                tsDiv.appendChild(badge);
+                            }
+                        }
+                    });
+                    setTimeout(() => {
+                        const act = playersScroll.querySelector('.player-card.active');
+                        if (act) act.scrollIntoView({behavior: "smooth", inline: "center", block: "nearest"});
+                    }, 50);
+                    const name = players[currentPlayerIdx] || '';
+                    const ttotal = throws.reduce((a, b) => a + b, 0) || 0;
+                    turnInfo.textContent = name ? `${name}'s Turn — Total: ${ttotal}` : '';
+                    if (!roundScores[name] || !roundScores[name][round] || throws.length < throwsPerTurn) {
+                        buildScoreGrid();
+                    } else {
+                        scoreGridDiv.innerHTML = '';
+                    }
+                    undoBtn.disabled = undoStack.length === 0;
+                    nextBtn.disabled = throws.length !== throwsPerTurn;
+
+                    // If tournament mode, render (update) the in-game leaderboard so players can see tournament standings live
+                    if (tournamentMode) {
+                        tournamentLeaderboardInGame.style.display = 'block';
+                        renderTournamentLeaderboard();
+                    } else {
+                        tournamentLeaderboardInGame.style.display = 'none';
+                    }
+
+                    saveGameState();
+                }
+
+                function addThrow(score) {
+                    if (throws.length >= throwsPerTurn) return;
+                    pushUndoState(); throws.push(score);
+                    const name = players[currentPlayerIdx];
+                    dartsThrown[name] = (dartsThrown[name] || 0) + 1;
+                    if (score === 50) {
+                        // small visual cue not relying on global selectors
+                    }
+                    updateGameUI();
+                }
+
+                undoBtn.onclick = () => {
+                    if (undoStack.length === 0) return;
+                    const prev = undoStack.pop();
+                    players = deepClone(prev.players);
+                    scores = deepClone(prev.scores);
+                    round = prev.round;
+                    currentPlayerIdx = prev.currentPlayerIdx;
+                    throws = deepClone(prev.throws);
+                    roundScores = deepClone(prev.roundScores);
+                    dartsThrown = deepClone(prev.dartsThrown);
+                    updatePlayersList();
+                    updateGameUI();
+                };
+
+                nextBtn.onclick = () => {
+                    if (throws.length !== throwsPerTurn) return;
+                    pushUndoState();
+                    const name = players[currentPlayerIdx];
+                    scores[name] += throws.reduce((a, b) => a + b, 0);
+                    if (!roundScores[name]) roundScores[name] = {};
+                    roundScores[name][round] = [...throws];
+                    throws = [];
+                    if (currentPlayerIdx < players.length - 1) {
+                        currentPlayerIdx++;
+                    } else {
+                        currentPlayerIdx = 0;
+                        round++;
+                        if (round > maxRounds) { showWinner(); saveGameState(); return; }
+                    }
+
+                    // Update live leaderboard after the player's turn (useful in tournament)
+                    if (tournamentMode) renderTournamentLeaderboard();
+
+                    updateGameUI();
+                };
+
+                endBtn.onclick = () => {
+                    if (confirm("Are you sure you want to finish the game?")) {
+                        showWinner(); saveGameState();
+                    }
+                };
+
+                function buildScoreGrid() {
+                    scoreGridDiv.className = 'score-grid'; scoreGridDiv.innerHTML = '';
+                    scoreGridDiv.appendChild(makeScoreBtn('MISS', 0, 'miss'));
+                    scoreGridDiv.appendChild(makeScoreBtn('Bull', 25, 'bull25', '25'));
+                    scoreGridDiv.appendChild(makeScoreBtn('Bull', 50, 'bull', '50'));
+                    for (let i=1; i<=20; i++) scoreGridDiv.appendChild(makeScoreBtn(i, i, 'single', 'S'));
+                    for (let i=1; i<=20; i++) scoreGridDiv.appendChild(makeScoreBtn(i, i*2, 'double', 'D'));
+                    for (let i=1; i<=20; i++) scoreGridDiv.appendChild(makeScoreBtn(i, i*3, 'triple', 'T'));
+                }
+                function makeScoreBtn(label, value, type, dots='') {
+                    const btn = document.createElement('button');
+                    btn.className = `score-btn ${type}`;
+                    btn.innerHTML = `<span>${label}</span>${dots?'<span class="dots">'+dots+'</span>':''}`;
+                    btn.onclick = () => addThrow(value);
+                    return btn;
+                }
+
+                function sendGameDataToGoogleSheet() {
+                    const now = new Date();
+                    const data = {
+                        date: now.toLocaleDateString(),
+                        time: now.toLocaleTimeString(),
+                        playerNames: players,
+                        scores: scores,
+                        statistics: {
+                            ppd: players.map(name => dartsThrown[name] ? (scores[name]/dartsThrown[name]).toFixed(2) : '0.00'),
+                            dartsThrown: dartsThrown,
+                            roundScores: roundScores
+                        }
+                    };
+                    fetch('https://script.google.com/macros/s/AKfycbxhisLlKlXWYvXatWgokrJ3hAbIbzraqb9ZD5B3V4FVRM4yzKN6Af9LgrdiZ-IjClgy/exec', {
+            		method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+        	    });
+                }
+
+                function showWinner() {
+                    gameDiv.style.display = 'none';
+                    winnerDiv.style.display = 'flex';
+                    // determine ordering (descending scores)
+                    let sorted = players.slice().sort((a,b)=>scores[b]-scores[a]);
+                    let max = scores[sorted[0]] || 0;
+                    let winners = sorted.filter(p=>scores[p]===max);
+                    winnerBanner.innerHTML = winners.length>1
+                        ? `🏆 Match ${tournamentMode? tournamentCurrentMatch: ''} Tie! ${winners.join(' & ')}`
+                        : `🏆 Match ${tournamentMode? tournamentCurrentMatch: ''} Winner: ${sorted[0]}`;
+                    try{ confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } }); }catch(e){}
+
+                    // show per-match final scores
+                    finalScoresDiv.innerHTML = '';
+                    sorted.forEach((name, idx) => {
+                        let medal = idx===0 ? '🥇' : idx===1 ? '🥈' : idx===2 ? '🥉' : '';
+                        let darts = dartsThrown[name] || 0;
+                        let ppd = darts ? (scores[name]/darts).toFixed(2) : '0.00';
+                        let maxScore = Math.max(...players.map(p=>scores[p]));
+                        let statText = '';
+                        if (scores[name] === maxScore && sorted.filter(p=>scores[p]===maxScore).length === 1) statText = 'Leader';
+                        else if (scores[name] === maxScore) statText = 'Tied';
+                        else statText = `Behind by ${maxScore - scores[name]}`;
+                        finalScoresDiv.innerHTML += `<div class="final-score-row">
+                            <div>${medal} ${name}</div>
+                            <div class="stat-label">Score</div><div class="stat-value">${scores[name]}</div>
+                            <div class="stat-label">PPD</div><div class="stat-value">${ppd}</div>
+                            <div class="stat-label">Darts</div><div class="stat-value">${darts}</div>
+                            <div class="stat-label">${statText}</div>
+                        </div>`;
+                    });
+
+                    // Tournament handling: convert match ranking into points (position = points)
+                    if (tournamentMode) {
+                        // add to history (sorted descending)
+                        tournamentHistory.push(sorted.slice());
+                        // add position scores (1 for 1st, 2 for 2nd, ...)
+                        sorted.forEach((name, idx) => {
+                            const pos = idx + 1;
+                            tournamentScores[name] = (tournamentScores[name] || 0) + pos;
+                        });
+
+                        tournamentLeaderboardContainer.style.display = 'block';
+                        renderTournamentLeaderboard();
+
+                        // if more matches to play, show Next Match button
+                        if (tournamentCurrentMatch < tournamentTotalMatches) {
+                            nextMatchBtn.style.display = 'inline-block';
+                        } else {
+                            nextMatchBtn.style.display = 'none';
+                        }
+                        tournamentInfo.style.display = 'block';
+                        tournamentInfo.textContent = `Tournament: Match ${tournamentCurrentMatch} of ${tournamentTotalMatches}`;
+
+                        // hide in-game leaderboard on winner screen
+                        tournamentLeaderboardInGame.style.display = 'none';
+                    } else {
+                        tournamentLeaderboardContainer.style.display = 'none';
+                        nextMatchBtn.style.display = 'none';
+                    }
+
+                    saveGameState(); sendGameDataToGoogleSheet();
+                }
+
+                function renderTournamentLeaderboard() {
+                    // leaderboard sorted by cumulative points (lower is better). show ties accordingly
+                    const entries = Object.keys(tournamentScores).map(name => ({name, points: tournamentScores[name] || 0}));
+                    entries.sort((a,b)=>a.points - b.points || a.name.localeCompare(b.name));
+                    // render in final/winner area
+                    tournamentLeaderboard.innerHTML = '';
+                    entries.forEach((e, idx) => {
+                        const row = document.createElement('div');
+                        row.className = 'tournament-row';
+                        row.innerHTML = `<div>${idx+1}. ${e.name}</div><div>Pts: ${e.points}</div>`;
+                        tournamentLeaderboard.appendChild(row);
+                    });
+                    // render in-game compact leaderboard
+                    if (tournamentLeaderboardInGameList) {
+                        tournamentLeaderboardInGameList.innerHTML = '';
+                        entries.forEach((e, idx) => {
+                            const row = document.createElement('div');
+                            row.className = 'tournament-row';
+                            row.style.padding = '4px 6px';
+                            row.style.borderBottom = '1px dashed rgba(255,255,255,0.03)';
+                            row.innerHTML = `<div style="font-size:0.9rem;">${idx+1}. ${e.name}</div><div style="font-size:0.9rem;">${e.points}</div>`;
+                            tournamentLeaderboardInGameList.appendChild(row);
+                        });
+                        // if no entries yet (fresh tournament), show players with 0 points
+                        if (entries.length === 0 && players.length) {
+                            players.forEach((p, i) => {
+                                tournamentLeaderboardInGameList.innerHTML += `<div class="tournament-row" style="padding:4px 6px;"><div style="font-size:0.9rem;">${i+1}. ${p}</div><div style="font-size:0.9rem;">0</div></div>`;
+                            });
+                        }
+                    }
+                }
+
+                nextMatchBtn.onclick = () => {
+                    if (!tournamentMode) return;
+                    if (tournamentCurrentMatch >= tournamentTotalMatches) return;
+
+                    // Determine new player order from previous match: LAST place throws FIRST.
+                    // tournamentHistory stores previous matches as arrays sorted descending (winner first).
+                    const lastMatchSorted = tournamentHistory.length ? tournamentHistory[tournamentHistory.length - 1].slice() : null;
+                    if (lastMatchSorted && lastMatchSorted.length === players.length) {
+                        // Reverse the last-match order so last-place becomes first to throw
+                        const newOrder = lastMatchSorted.slice().reverse();
+                        // Preserve tournamentScores mapping; only reorder players[] for the next match
+                        players = newOrder.slice();
+                    } else {
+                        // fallback: if history missing or mismatch, keep current players order
+                        console.warn('Tournament history missing or mismatch — keeping current order for next match.');
+                    }
+
+                    // increment match counter
+                    tournamentCurrentMatch++;
+
+                    // reset per-match state but keep tournamentScores and tournamentHistory
+                    players.forEach(p => { scores[p] = 0; roundScores[p] = {}; dartsThrown[p] = 0; });
+                    round = 1; currentPlayerIdx = 0; throws = [];
+                    winnerDiv.style.display = 'none';
+                    gameDiv.style.display = 'flex';
+                    tournamentInfo.textContent = `Tournament: Match ${tournamentCurrentMatch} of ${tournamentTotalMatches}`;
+                    // show in-game leaderboard and hide the end-of-match leaderboard container
+                    tournamentLeaderboardInGame.style.display = 'block';
+                    tournamentLeaderboardContainer.style.display = 'none';
+
+                    updatePlayersList();
+                    renderTournamentLeaderboard();
+                    updateGameUI();
+                    saveGameState();
+                };
+
+                newGameBtn.onclick = () => {
+                    // reset everything (tournament and match)
+                    if (confirm('Start a fresh game and clear tournament data?')) {
+                        localStorage.removeItem(LOCAL_STORAGE_KEY);
+                        players = []; scores = {}; round = 1; currentPlayerIdx = 0;
+                        throws = []; roundScores = {}; dartsThrown = {}; undoStack = [];
+                        tournamentMode = false; tournamentTotalMatches = 1; tournamentCurrentMatch = 0; tournamentScores = {}; tournamentHistory = [];
+                        setupDiv.style.display = 'flex';
+                        gameDiv.style.display = 'none';
+                        winnerDiv.style.display = 'none';
+                        tournamentInfo.style.display = 'none';
+                        updatePlayersList(); startBtn.disabled = true; playerNameInput.value = '';
+                        tournamentLeaderboardInGame.style.display = 'none';
+                        tournamentLeaderboardContainer.style.display = 'none';
+                        saveGameState();
+                    }
+                };
+
+                function initialize() {
+                    if (loadGameState()) {
+                        if (players.length && round <= maxRounds) {
+                            setupDiv.style.display = 'none';
+                            gameDiv.style.display = 'flex';
+                            winnerDiv.style.display = 'none';
+                            tournamentToggle.checked = tournamentMode;
+                            numMatchesInput.value = tournamentTotalMatches;
+                            // If tournament mode restored, show in-game leaderboard
+                            if (tournamentMode) {
+                                tournamentLeaderboardInGame.style.display = 'block';
+                                tournamentInfo.style.display = 'block';
+                                tournamentInfo.textContent = `Tournament: Match ${tournamentCurrentMatch || 1} of ${tournamentTotalMatches}`;
+                            } else {
+                                tournamentLeaderboardInGame.style.display = 'none';
+                                tournamentInfo.style.display = 'none';
+                            }
+                            renderTournamentLeaderboard();
+                            updatePlayersList();
+                            updateGameUI();
+                        } else if (round > maxRounds && players.length) {
+                            setupDiv.style.display = 'none';
+                            gameDiv.style.display = 'none';
+                            winnerDiv.style.display = 'flex';
+                            tournamentToggle.checked = tournamentMode;
+                            numMatchesInput.value = tournamentTotalMatches;
+                            showWinner();
+                        } else {
+                            setupDiv.style.display = 'flex';
+                            gameDiv.style.display = 'none';
+                            winnerDiv.style.display = 'none';
+                            updatePlayersList();
+                            startBtn.disabled = players.length === 0;
+                        }
+                    } else {
+                        updatePlayersList();
+                        startBtn.disabled = true;
+                        setupDiv.style.display = 'flex';
+                        gameDiv.style.display = 'none';
+                        winnerDiv.style.display = 'none';
+                    }
+                }
+                initialize();
+            })();
+        </script>
+
+<script>
+  // Simple navigation helpers added to ensure game selection works.
+  var currentGame = null;
+  function selectGame(gameId){
+    try{
+      document.getElementById('gameSelector').style.display = 'none';
+    }catch(e){}
+    var el = document.getElementById(gameId);
+    if(el){
+      el.style.display = 'block';
+      el.classList.remove('hidden');
+    }
+    currentGame = gameId;
+  }
+  function showGameSelector(){
+    // hide games
+    ['game1','game2'].forEach(id=>{
+      var e = document.getElementById(id);
+      if(e){ e.style.display='none'; e.classList.add('hidden'); }
     });
-    setTimeout(() => {
-        const act = playersScroll.querySelector('.player-card.active');
-        if (act) act.scrollIntoView({behavior: "smooth", inline: "center", block: "nearest"});
-    }, 50);
-    const name = players[currentPlayerIdx];
-    const ttotal = throws.reduce((a, b) => a + b, 0) || 0;
-    turnInfo.textContent = `${name}'s Turn — Total: ${ttotal}`;
-    if (!roundScores[name] || !roundScores[name][round] || throws.length < throwsPerTurn) {
-        buildScoreGrid();
+    var sel = document.getElementById('gameSelector');
+    if(sel) sel.style.display = 'flex';
+    currentGame = null;
+  }
+  // ensure selector visible on load
+  document.addEventListener('DOMContentLoaded', function(){ showGameSelector(); });
+</script>
+
+
+<!-- Added: mobile tournament toggle CSS + JS -->
+<style>
+/* Mobile toggle improvements */
+#tournamentToggleBtn {
+  touch-action: manipulation;
+  padding: 8px 10px;
+  z-index: 50;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  color: white;
+}
+/* Ensure mini list has smooth collapse behavior */
+#tournamentLeaderboardInGameList {
+  transition: max-height 0.25s ease-out, opacity 0.2s ease-out;
+  overflow: hidden;
+}
+</style>
+
+<script>
+// Mobile tournament toggle: attaches handler even when original game2 IIFE doesn't reference it.
+// Uses DOMContentLoaded to ensure elements exist.
+document.addEventListener('DOMContentLoaded', function () {
+  try {
+    var tournamentToggleBtn = document.getElementById('tournamentToggleBtn');
+    var miniList = document.getElementById('tournamentLeaderboardInGameList');
+
+    if (!tournamentToggleBtn || !miniList) {
+      // Nothing to do if elements aren't present
+      return;
+    }
+
+    // helper to set label
+    function setToggleLabel(isOpen) {
+      tournamentToggleBtn.textContent = isOpen ? 'Hide ▴' : 'Show ▾';
+    }
+
+    // initialize collapsed for mobile by default
+    if (window.innerWidth <= 640) {
+      miniList.style.display = 'none';
+      setToggleLabel(false);
     } else {
-        scoreGridDiv.innerHTML = '';
+      // for larger screens keep whatever default is
+      setToggleLabel(getComputedStyle(miniList).display !== 'none');
     }
-    undoBtn.disabled = undoStack.length === 0;
-    nextBtn.disabled = throws.length !== throwsPerTurn;
-    saveGameState();
-}
 
-function addThrow(score) {
-    if (throws.length >= throwsPerTurn) return;
-    pushUndoState();
-    throws.push(score);
-    const name = players[currentPlayerIdx];
-    dartsThrown[name] = (dartsThrown[name] || 0) + 1;
-    if (score === 50) {
-        const bullBtn = document.querySelector('.score-btn.bull');
-        if (bullBtn) {
-            bullBtn.classList.add('bullseye-anim');
-            setTimeout(() => bullBtn.classList.remove('bullseye-anim'), 500);
-        }
-    }
-    updateGameUI();
-}
-
-undoBtn.onclick = () => {
-    if (undoStack.length === 0) return;
-    const prev = undoStack.pop();
-    players = deepClone(prev.players);
-    scores = deepClone(prev.scores);
-    round = prev.round;
-    currentPlayerIdx = prev.currentPlayerIdx;
-    throws = deepClone(prev.throws);
-    roundScores = deepClone(prev.roundScores);
-    dartsThrown = deepClone(prev.dartsThrown);
-    updateGameUI();
-};
-
-nextBtn.onclick = () => {
-    if (throws.length !== throwsPerTurn) return;
-    pushUndoState();
-    const name = players[currentPlayerIdx];
-    scores[name] += throws.reduce((a, b) => a + b, 0);
-    roundScores[name][round] = [...throws];
-    throws = [];
-    if (currentPlayerIdx < players.length - 1) {
-        currentPlayerIdx++;
-    } else {
-        currentPlayerIdx = 0;
-        round++;
-        if (round > maxRounds) {
-            showWinner();
-            saveGameState();
-            return;
-        }
-    }
-    updateGameUI();
-};
-
-endBtn.onclick = () => {
-    if (confirm("Are you sure you want to finish the game?")) {
-        showWinner();
-        saveGameState();
-    }
-};
-
-function buildScoreGrid() {
-    scoreGridDiv.className = 'score-grid';
-    scoreGridDiv.innerHTML = '';
-    scoreGridDiv.appendChild(makeScoreBtn('MISS', 0, 'miss'));
-    scoreGridDiv.appendChild(makeScoreBtn('Bull', 25, 'bull25', '25'));
-    scoreGridDiv.appendChild(makeScoreBtn('Bull', 50, 'bull', '50'));
-    for (let i=1; i<=20; i++) scoreGridDiv.appendChild(makeScoreBtn(i, i, 'single', 'S'));
-    for (let i=1; i<=20; i++) scoreGridDiv.appendChild(makeScoreBtn(i, i*2, 'double', 'D'));
-    for (let i=1; i<=20; i++) scoreGridDiv.appendChild(makeScoreBtn(i, i*3, 'triple', 'T'));
-}
-function makeScoreBtn(label, value, type, dots='') {
-    const btn = document.createElement('button');
-    btn.className = `score-btn ${type}`;
-    btn.innerHTML = `<span>${label}</span>${dots?'<span class="dots">'+dots+'</span>':''}`;
-    btn.onclick = () => addThrow(value);
-    return btn;
-}
-
-// --- Google Sheets Integration ---
-function sendGameDataToGoogleSheet() {
-    const now = new Date();
-    const data = {
-        date: now.toLocaleDateString(),
-        time: now.toLocaleTimeString(),
-        playerNames: players,
-        scores: scores,
-        statistics: {
-            ppd: players.map(name => dartsThrown[name] ? (scores[name]/dartsThrown[name]).toFixed(2) : '0.00'),
-            dartsThrown: dartsThrown,
-            roundScores: roundScores
-        }
-    };
-    fetch('https://script.google.com/macros/s/AKfycbxhisLlKlXWYvXatWgokrJ3hAbIbzraqb9ZD5B3V4FVRM4yzKN6Af9LgrdiZ-IjClgy/exec', { // <-- Replace with your Google Apps Script Web App URL
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
+    tournamentToggleBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      var isHidden = miniList.style.display === 'none' || getComputedStyle(miniList).display === 'none';
+      if (isHidden) {
+        miniList.style.display = 'block';
+        // optionally animate height: reset maxHeight
+        miniList.style.maxHeight = miniList.scrollHeight + 'px';
+        miniList.style.opacity = '1';
+      } else {
+        // collapse
+        miniList.style.display = 'none';
+        miniList.style.maxHeight = '0';
+        miniList.style.opacity = '0';
+      }
+      setToggleLabel(isHidden);
     });
-}
 
-
-function showWinner() {
-    gameDiv.style.display = 'none';
-    winnerDiv.style.display = 'flex';
-    let max = Math.max(...players.map(p=>scores[p]));
-    let winners = players.filter(p=>scores[p]===max);
-    winnerBanner.innerHTML = winners.length>1
-        ? `🏆 Tie! ${winners.join(' & ')}`
-        : `🏆 Winner: ${winners[0]}`;
-    confetti({
-        particleCount: 200,
-        spread: 100,
-        origin: { y: 0.6 }
+    // Also update on orientation/resize to ensure mobile default
+    window.addEventListener('resize', function () {
+      if (window.innerWidth <= 640) {
+        if (getComputedStyle(miniList).display !== 'none') {
+          miniList.style.display = 'none';
+          setToggleLabel(false);
+        }
+      }
     });
-    finalScoresDiv.innerHTML = '';
-    let sorted = players.slice().sort((a,b)=>scores[b]-scores[a]);
-    sorted.forEach((name, idx) => {
-        let medal = idx===0 ? '🥇' : idx===1 ? '🥈' : idx===2 ? '🥉' : '';
-        let darts = dartsThrown[name] || 0;
-        let ppd = darts ? (scores[name]/darts).toFixed(2) : '0.00';
-        let maxScore = Math.max(...players.map(p=>scores[p]));
-        let statText = '';
-        if (scores[name] === maxScore && sorted.filter(p=>scores[p]===maxScore).length === 1) {
-            statText = 'Leader';
-        } else if (scores[name] === maxScore) {
-            statText = 'Tied';
-        } else {
-            statText = `Behind by ${maxScore - scores[name]}`;
-        }
-        finalScoresDiv.innerHTML += `
-        <div class="final-score-row">
-            <div>${medal} ${name}</div>
-            <div class="stat-label">Score</div>
-            <div class="stat-value">${scores[name]}</div>
-            <div class="stat-label">PPD</div>
-            <div class="stat-value">${ppd}</div>
-            <div class="stat-label">Darts</div>
-            <div class="stat-value">${darts}</div>
-            <div class="stat-label">${statText}</div>
-        </div>`;
-    });
-    saveGameState();
-	sendGameDataToGoogleSheet(); // <-- Send data to Google Sheet after game ends
-}
-newGameBtn.onclick = () => {
-    localStorage.removeItem(LOCAL_STORAGE_KEY);
-    players = [];
-    scores = {};
-    round = 1;
-    currentPlayerIdx = 0;
-    throws = [];
-    roundScores = {};
-    dartsThrown = {};
-    undoStack = [];
-    setupDiv.style.display = 'flex';
-    gameDiv.style.display = 'none';
-    winnerDiv.style.display = 'none';
-    updatePlayersList();
-    startBtn.disabled = true;
-    playerNameInput.value = '';
-    saveGameState();
-};
-
-function initialize() {
-    if (loadGameState()) {
-        if (players.length && round <= maxRounds) {
-            setupDiv.style.display = 'none';
-            gameDiv.style.display = 'flex';
-            winnerDiv.style.display = 'none';
-            updateGameUI();
-        } else if (round > maxRounds && players.length) {
-            setupDiv.style.display = 'none';
-            gameDiv.style.display = 'none';
-            winnerDiv.style.display = 'flex';
-            showWinner();
-        } else {
-            setupDiv.style.display = 'flex';
-            gameDiv.style.display = 'none';
-            winnerDiv.style.display = 'none';
-            updatePlayersList();
-            startBtn.disabled = players.length === 0;
-        }
-    } else {
-        updatePlayersList();
-        startBtn.disabled = true;
-        setupDiv.style.display = 'flex';
-        gameDiv.style.display = 'none';
-        winnerDiv.style.display = 'none';
-    }
-}
-initialize();
-            } catch(error) {
-                console.error('Error initializing Game 2:', error);
-            } finally {
-                // Restore original getElementById
-                document.getElementById = originalGetElementById;
-            }
-        }
-
-        // Initialize the app when DOM is ready
-        document.addEventListener('DOMContentLoaded', function() {
-            // Start with game selector visible
-            showGameSelector();
-        });
-    </script>
-</body>
-</html>
+  } catch (err) {
+    console.warn('Mobile tournament toggle script error:', err);
+  }
+});
+</script>
+<!-- End added code -->
